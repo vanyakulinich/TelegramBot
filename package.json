@@ -4,6 +4,7 @@
   "description": "'Smart Reminder' Telegram Bot. Reminds all dates, holidays and other things which are set by user",
   "main": "start.js",
   "scripts": {
+    "start": "nodemon start.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,11 +18,15 @@
     "firebase": "^5.7.1",
     "firebase-admin": "^6.4.0",
     "koa": "^2.6.2",
-    "node-telegram-bot-api": "^0.30.0"
+    "koa-router": "^7.4.0",
+    "koa2-cors": "^2.0.6",
+    "node-telegram-bot-api": "^0.30.0",
+    "vue": "^2.5.21",
+    "vue-server-renderer": "^2.5.21"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.9"
   }
 }
