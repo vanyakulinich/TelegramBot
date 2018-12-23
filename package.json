@@ -1,0 +1,26 @@
+{
+  "name": "smartreminderbot",
+  "version": "1.0.0",
+  "description": "'Smart Reminder' Telegram Bot. Reminds all dates, holidays and other things which are set by user",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "reminds",
+    "telegram",
+    "bot"
+  ],
+  "author": "Ivan Kulinich",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^5.7.1",
+    "firebase-admin": "^6.4.0",
+    "node-telegram-bot-api": "^0.30.0"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "nodemon": "^1.18.4"
+  }
+}
