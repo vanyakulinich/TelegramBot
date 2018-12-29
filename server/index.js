@@ -16,9 +16,8 @@ const PORT = process.env.PORT || 5000;
 const bundle = require('../dist/vue-ssr-server-bundle.json');
 const template = fs.readFileSync(path.resolve(__dirname, './index.template.html'), 'utf-8')
 const renderer = createBundleRenderer(bundle, {
-  runInNewContext: false, // рекомендуется
-  template, // (опционально) шаблон страницы
-  // clientManifest // (опционально) манифест клиентской сборки
+  runInNewContext: false,
+  template,
 })
 
 
@@ -26,8 +25,9 @@ const renderer = createBundleRenderer(bundle, {
 server
   .use(cors())
   .use(router.routes())
-  .use(staticServe(path.resolve(__dirname, 'public')))
-  .use(staticServe(path.resolve(__dirname, 'public')))
+  // .use(staticServe(path.resolve(__dirname, 'public')))
+  // .use(staticServe(path.resolve(__dirname, 'public')))
+  // .use(staticServe(path.resolve(__dirname, './dist/service-worker.js')))
   .listen(PORT, () => console.log(`Server is on ${PORT} port`));
 
 // construct server
@@ -40,12 +40,12 @@ class Server {
     this.router.get('/vue-app', async ctx => {
       ctx.status = 200;
 
-      const context = 'test';
-
-      renderer.renderToString(context, (err, html) => {
-        if (err) throw new Error(err);
-        ctx.body = html;
-      })
+      const context = {
+        title: 'Vue Page',
+        url: ctx.url,
+      };
+     const page = await renderer.renderToString(context);
+     ctx.body = page;
     })
   }
 }

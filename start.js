@@ -7,7 +7,7 @@ require('babel-register')({
             "node": "current"
           }
       }
-    ]
+    ],
   ]
 })
 module.exports = require('./index.js')

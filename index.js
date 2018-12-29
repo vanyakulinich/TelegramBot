@@ -1,4 +1,4 @@
-// import {Bot, db } from './api';
+import {Bot, db } from './api';
 import Server from './server/index';
 
 // init
