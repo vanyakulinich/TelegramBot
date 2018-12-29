@@ -6,7 +6,7 @@ require('babel-register')({
           {
             "node": "current"
           }
-        }
+      }
     ]
   ]
 })

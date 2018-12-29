@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 import TelegramBot from 'node-telegram-bot-api';
-import { BOT_KEY } from '../../config/bot';
+import { BOT_KEY } from '../config/bot';
 Promise.config({
   cancellation: true
 });
