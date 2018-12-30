@@ -25,9 +25,6 @@ const renderer = createBundleRenderer(bundle, {
 server
   .use(cors())
   .use(router.routes())
-  // .use(staticServe(path.resolve(__dirname, 'public')))
-  // .use(staticServe(path.resolve(__dirname, 'public')))
-  // .use(staticServe(path.resolve(__dirname, './dist/service-worker.js')))
   .listen(PORT, () => console.log(`Server is on ${PORT} port`));
 
 // construct server
@@ -39,10 +36,12 @@ class Server {
   start() {
     this.router.get('/vue-app', async ctx => {
       ctx.status = 200;
-
+      // TODO: make request to db
       const context = {
         title: 'Vue Page',
         url: ctx.url,
+        // TODO: send data from db
+        testData: 'this is test string for initial render and store'
       };
      const page = await renderer.renderToString(context);
      ctx.body = page;

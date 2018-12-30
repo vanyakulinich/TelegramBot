@@ -5,6 +5,7 @@
 </template>
 
 <script>
+// TODO: implement base component
 export default {
   name: 'home'
 }

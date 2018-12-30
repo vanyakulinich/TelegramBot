@@ -3,7 +3,7 @@ import { createApp } from './app'
 // pass data for init of app
 export default context => {
   return new Promise((resolve, reject) => {
-    const { app, router } = createApp()
+    const { app, router, store } = createApp(context.testData)
 
     router.push(context.url)
 
@@ -13,7 +13,7 @@ export default context => {
       if (!matchedComponents.length) {
         return reject({ code: 404 })
       }
-
+      context.state = store.state;
       resolve(app)
     }, reject)
   })

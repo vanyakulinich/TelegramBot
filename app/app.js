@@ -1,16 +1,20 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import App from './App.vue';
+import { sync } from 'vuex-router-sync';
 import { createRouter } from './router';
+import { createStore } from './store';
 
-// экспортируем функцию фабрику для создания экземпляров
-// нового приложения, маршрутизатора и хранилища
-export function createApp () {
+export function createApp (initData) {
 
   const router = createRouter();
+  const store = createStore(initData);
+
+  sync(store, router)
 
   const app = new Vue({
     router, 
+    store,
     render: h => h(App)
   })
-  return { app, router }
+  return { app, router, store }
 }
