@@ -25,9 +25,6 @@ const renderer = createBundleRenderer(bundle, {
 server
   .use(cors())
   .use(router.routes())
-  // .use(staticServe(path.resolve(__dirname, 'public')))
-  // .use(staticServe(path.resolve(__dirname, 'public')))
-  // .use(staticServe(path.resolve(__dirname, './dist/service-worker.js')))
   .listen(PORT, () => console.log(`Server is on ${PORT} port`));
 
 // construct server
