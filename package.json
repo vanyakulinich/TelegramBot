@@ -14,9 +14,10 @@
     "build:server": "webpack --config config/webpack.server.config.js --progress --hide-modules"
   },
   "keywords": [
-    "reminds",
-    "telegram",
-    "bot"
+    "reminder telegram bot",
+    "telegram bot",
+    "node",
+    "vue ssr"
   ],
   "author": "Ivan Kulinich",
   "license": "ISC",
