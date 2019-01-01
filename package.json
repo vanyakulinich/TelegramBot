@@ -4,7 +4,8 @@
   "description": "'Smart Reminder' Telegram Bot. Reminds all dates, holidays and other things which are set by user",
   "main": "start.js",
   "scripts": {
-    "dev": "npm run build && nodemon start.js",
+    "dev": "nodemon start.js",
+    "dev-web": "npm build && npm dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "babel-node": "babel-node --presets=env",
     "start": "cross-env NODE_ENV=production node start.js",
