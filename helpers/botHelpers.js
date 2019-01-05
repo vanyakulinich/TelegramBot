@@ -49,12 +49,15 @@ export const messages = {
   `,
   pastYear: `You cannot choose year, that have already passed. Try again`,
   noleapYear: `You cannot choose the 29th of February in no leap year. Try again`,
-  invalidTime: `Sorry, invalid time input. Please follow the syntax:
+  invalidTime: `
+    Sorry, invalid time input. Please follow the syntax:
+    ${botCommands.remind}
   `,
-  successReminder: (match) => `Congrats! New reminder "${match[1]}" is set up for ${match[2]} at ${match[3]}`
+  successReminder: (match) => `Congrats! New reminder "${match[1]}" is set up for ${match[2]} at ${match[3]}`,
+  errorMsg: `Sorry, something went wrong...Please try again`
 };
 
-export const remindMessage =(dateValidation, timeValidation) => {
+export const remindMessage =(dateValidation, timeValidation, match) => {
   if (!timeValidation) return messages.invalidTime;
   if (dateValidation) return (
     (dateValidation.length) ? dateValidation : messages.successReminder(match)
@@ -62,10 +65,24 @@ export const remindMessage =(dateValidation, timeValidation) => {
   return messages.invalidRemind;
 }
 
+export const manageValidations = (validatedDate, validatedTime) => {
+  let defaultResult = {
+    valid: false,
+    msg: ''
+  };
+  if (!validatedTime)  {
+    defaultResult.msg = messages.invalidTime;
+    return defaultResult;
+  }
+  if (validatedDate && validatedDate.length) defaultResult.msg = validatedDate;
+  if (validatedDate && typeof(validatedDate) === 'boolean') defaultResult.valid = true;
+  return defaultResult;
+}
+
 export const botRegEx = {
-  start: /\/start|start/,
-  help: /\/help|help/,
+  start: /\/start|start|Start/,
+  help: /\/help|help|Help/,
   link: /Link|link/,
-  remind: /remind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
+  remind: /Remind|remind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
 };
 

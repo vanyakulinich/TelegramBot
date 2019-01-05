@@ -9,5 +9,8 @@ require('babel-register')({
       }
     ],
   ]
-})
+});
+require("babel-core").transform("code", {
+  plugins: ["syntax-object-rest-spread"]
+});
 module.exports = require('./index.js')

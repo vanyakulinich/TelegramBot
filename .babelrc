@@ -4,6 +4,7 @@
   ],
   "plugins": [
     ["syntax-dynamic-import"],
+    ["syntax-object-rest-spread"],
     ["transform-runtime", {
       "polyfill": false,
       "regenerator": true
