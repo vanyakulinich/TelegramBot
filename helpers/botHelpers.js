@@ -54,6 +54,12 @@ export const messages = {
     ${botCommands.remind}
   `,
   successReminder: (match) => `Congrats! New reminder "${match[1]}" is set up for ${match[2]} at ${match[3]}`,
+  activatedReminder: ({ text, date, time }) => `
+    Hi!
+  This is your reminder bot.
+  You asked me to remind you about ${text.toUpperCase()} on ${date} at ${time}.
+  Please DO NOT FORGET about it.
+  `,
   errorMsg: `Sorry, something went wrong...Please try again`
 };
 

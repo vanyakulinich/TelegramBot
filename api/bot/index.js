@@ -13,6 +13,10 @@ export default class Bot {
   constructor(database) {
     this.bot = new TelegramBot(BOT_KEY, { polling: true});
     this.db = database.getDB();
+    this.nextReminder = {
+      time: null,
+      timeoutID: null
+    }
   }
 
   // TODO: implement watching reminders
@@ -48,6 +52,7 @@ export default class Bot {
         return;
       }
       const dateUTC = createUTCDate(match[2], match[3]);
+      const dateMs = createMSDate(dateUTC);
       const dbResponse = await this.db.setNewReminder(
         msg.chat.id, 
         {
@@ -55,9 +60,12 @@ export default class Bot {
           date: match[2],
           time: match[3],
           dateUTC,
-          dateMs: createMSDate(dateUTC)
+          dateMs,
+          expired: false,
+          repeat: false // TODO: implement repeat option
         }
       );
+      this._watchNextReminder(msg.chat.id, dateMs);
       this.bot.sendMessage(
         msg.chat.id, 
         dbResponse ? messages.successReminder(match) : messages.errorMsg);
@@ -68,15 +76,42 @@ export default class Bot {
       const matchedInput = Object.keys(botRegEx).find(expression => (
         botRegEx[expression].test(match[0]))
       );
-      if(!matchedInput) {
+      (!matchedInput) && (
         this.bot.sendMessage(
           msg.chat.id,
           (match[0].includes('remind')) ?
             messages.invalidRemind :
             messages.invalid
-        );
-      };
+        )
+      );
     });
+  }
+
+  _watchNextReminder(id, activateTime) {
+    if(this.nextReminder.time > activatedTime) return;
+    this.nextReminder.time = activateTime;
+    const timePoint = activateTime - Date.now();
+    this.nextReminder.timeoutID = setTimeout(() =>(
+      this._activateClosestReminder(id, activateTime)
+    ), timePoint)
+  }
+
+  async _activateClosestReminder(id, activateTime) {
+    const reminderData = await this.db.activateReminder(id, activateTime);
+    if (!reminderData) setTimeout(() => {
+      this.db.activateReminder(id, activateTime);
+    }, 1000);
+    const { text, date, time } = reminderData;
+    this.bot.sendMessage(
+      id, 
+      messages.activatedReminder({ text, date, time })
+    );
+  }
+
+  async _toggleClosestReminder() {
+    const newClosestReminder = await this.db._toggleClosestReminder();
+    console.log(newClosestReminder);
+    // TODO: implement nearest reminder
   }
 }
 
