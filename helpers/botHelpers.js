@@ -86,9 +86,9 @@ export const manageValidations = (validatedDate, validatedTime) => {
 }
 
 export const botRegEx = {
-  start: /\/start|start|Start/,
-  help: /\/help|help|Help/,
-  link: /Link|link/,
-  remind: /Remind|remind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
+  start: /\/start|[Ss]tart/,
+  help: /\/help|[Hh]elp/,
+  link: /[Ll]ink/,
+  remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
 };
 

@@ -1,17 +1,9 @@
 import { firebase } from '../config/db';
+import { path, newUserFactory } from '../../utils/dbUtils';
 
 class Database {
   constructor() {
     this.db = firebase.database();
-    this._usersPath = '/users'
-  }
-
-  _remindersPath(id) {
-    return `/users/${id}/reminders`;
-  }
-
-  _reminderIdPath(id, reminderId) {
-    return `${this._remindersPath(id)}/${reminderId}`;
   }
 
   getDB() {
@@ -20,20 +12,13 @@ class Database {
 
   startNewUser(userData) {
     const { id, first_name, last_name } = userData;
+    const users = this.db.ref(path.users());
     return (
-      this.db.ref(this._usersPath)
+      users
         .once('value')
         .then((data) => {
           (!data.child(id).exists()) && (
-            this.db.ref(this._usersPath).update({
-              [id]: {
-                personal: {
-                  firstName: first_name || '',
-                  lastName: last_name || ''
-                },
-                reminders: 'empty'
-              }
-            })
+            users.update(newUserFactory(id, first_name, last_name))
           )
           return true;
         },
@@ -42,8 +27,9 @@ class Database {
   }
 
   setNewReminder(id, reminder) {
+    const reminders = this.db.ref(path.reminders(id));
     return (
-      this.db.ref(this._remindersPath(id))
+      reminders
         .once('value')
         .then(data => {
           const existingReminders = data.val();
@@ -54,11 +40,12 @@ class Database {
           }
           const newData = (
             (!existingReminders ||
-              existingReminders === 'empty') ?
+            existingReminders === 'empty') ?
               newReminder : 
-              Object.assign({}, existingReminders, newReminder)
+              { ...existingReminders, ...newReminder }
           )
-          this.db.ref(this._remindersPath(id)).update(newData);
+          reminders.update(newData);
+          this._toggleClosestReminder(id, reminder.dateMs);
           return true;
         },
         err => false)
@@ -67,7 +54,7 @@ class Database {
 
   getReminders(id) {
     return (
-      this.db.ref(this._remindersPath(id))
+      this.db.ref(path.reminders(id))
       .once('value')
       .then(data => data.val(),
         err => false)
@@ -76,7 +63,7 @@ class Database {
 
   activateReminder(id, reminderId) {
     const reminderPath = this.db.ref(
-      this._reminderIdPath(id, reminderId)
+      path.reminderId(id, reminderId)
     );
     return (
       reminderPath
@@ -93,17 +80,70 @@ class Database {
           );
           return reminderData;
         }, err => false)
+        .then(data => {
+          if(!data) return false;
+          this._nextClosestReminder(id);
+          return data;
+        })
     )
   }
 
-  toggleClosestReminder() {
-    return (
-      this.db.ref(this._usersPath)
+  _nextClosestReminder(id) {
+    const reminders = this.db.ref(
+      path.reminders(id)
+    );
+    reminders
       .once('value')
-      .then(data => {
-        const usersData = data.val();
-        // TODO: implement search of nearest reminder
+      .then(data => data.val())
+      .then(idReminders => {
+        const newReminder = Object.keys(idReminders).find(item =>(
+          !idReminders[item].expired
+        ))
+        return newReminder;
       })
+      .then(closest => {
+        this.db.ref(path.user(id))
+          .update({ nextReminder: closest || null })
+      });
+  }
+
+  _toggleClosestReminder(id, reminderDate) {
+    const closestReminder = this.db.ref(path.nextReminder(id));
+    closestReminder
+      .once('value')
+      .then(data => data.val())
+      .then(nextReminder => {
+        const user = this.db.ref(path.user(id));
+        if (!nextReminder ||
+            reminderDate < nextReminder ||
+            nextReminder < Date.now()) {
+          user.update({ nextReminder: reminderDate });
+        }
+      })
+  }
+
+  findClosestReminderInUsers() {
+    const users = this.db.ref(path.users());
+    return (
+      users
+        .once('value')
+        .then(data => data.val())
+        .then(users => {
+          const usersIds = Object.keys(users);
+          const newNextReminder = {
+            time: 0,
+            id: null
+          }
+          usersIds.forEach(user => {
+            if(!newNextReminder.time  ||
+              ( users[user].nextReminder &&
+                users[user].nextReminder < newNextReminder.time)) {
+              newNextReminder.time = users[user].nextReminder || null;
+              newNextReminder.id = user;
+            } 
+          })
+          return newNextReminder;
+        })
     )
   }
 }
