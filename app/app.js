@@ -5,11 +5,11 @@ import { createRouter } from './router';
 import { createStore } from './store';
 
 export function createApp (initData) {
+  const { url, data } = initData;
+  const router = createRouter(url);
+  const store = createStore(data);
 
-  const router = createRouter();
-  const store = createStore(initData);
-
-  sync(store, router)
+  sync(store, router);
 
   const app = new Vue({
     router, 

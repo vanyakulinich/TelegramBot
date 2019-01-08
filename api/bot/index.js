@@ -30,7 +30,7 @@ export default class Bot {
     this.watcher = watcherGenerator(this);
   }
 
-  start() {
+  start(server) {
     // bot start chat
     this.bot.onText(botRegEx.start, async msg => {
       const dbResponse = await this.db.startNewUser(msg.chat);
@@ -45,11 +45,16 @@ export default class Bot {
     );
 
     // web link 
-    this.bot.onText(botRegEx.link, msg => {
-      const link = `http://www.localhost:5000/vue-app/` // TODO: implement personal link
+    this.bot.onText(botRegEx.link, async msg => {
+      const user = await this.db.getUser(msg.chat.id);
+      const endpoint = `${msg.chat.id}_${Date.now()}`
+      await server.serve({ endpoint, user });
+      // TODO: implement real url when deploying
+      const link = `http://www.localhost:5000/app/${endpoint}` 
+     
       this.bot.sendMessage(
         msg.chat.id,
-        `[Your personal page link](${link})`, { parse_mode: 'Markdown' });
+        `[${messages.link}](${link})`, { parse_mode: 'Markdown' });
     });
 
     // set new reminder

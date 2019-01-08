@@ -5,7 +5,6 @@
   "main": "start.js",
   "scripts": {
     "dev": "nodemon start.js",
-    "dev-web": "npm build && npm dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "babel-node": "babel-node --presets=env",
     "start": "cross-env NODE_ENV=production node start.js",

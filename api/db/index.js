@@ -10,6 +10,16 @@ class Database {
     return this;
   }
 
+  getUser(id) {
+    const user = this.db.ref(path.user(id));
+    return (
+      user
+        .once('value')
+        .then(data => data.val(),
+          err => false)
+    )
+  }
+
   startNewUser(userData) {
     const { id, first_name, last_name } = userData;
     const users = this.db.ref(path.users());

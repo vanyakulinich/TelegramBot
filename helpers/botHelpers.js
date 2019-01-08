@@ -39,6 +39,9 @@ export const messages = {
     To manage your reminders please use your personal web page.
     To get access to it, set link command to bot.
   `,
+  link: `
+    Here is the link to your personal protected page for managing your reminders
+  `,
   invalid: `
     Sorry, invalid input. Please use one of the list below:
     ${listOfCommands}

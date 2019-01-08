@@ -1,11 +1,9 @@
 import {Bot, db } from './api';
-// import Server from './server/index';
+import Server from './server';
 
 // init
 const bot = new Bot(db);
-// const server = new Server();
-// start
-bot.start();
-// server.start();
+const server = new Server(db);
 
-// db.ref('/').update({'newTestAdmin3': 'newTest'});
+// start
+bot.start(server);

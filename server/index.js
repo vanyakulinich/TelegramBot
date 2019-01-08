@@ -1,5 +1,4 @@
 import Koa from 'koa';
-import staticServe from 'koa-static'
 import Router from 'koa-router';
 import cors from 'koa2-cors';
 import fs from 'fs';
@@ -29,19 +28,18 @@ server
 
 // construct server
 class Server {
-  constructor() {
+  constructor(database) {
     this.server = server;
     this.router = router;
+    this.db = database.getDB();
   }
-  start() {
-    this.router.get('/vue-app', async ctx => {
+  serve({ endpoint, user }) {
+    this.router.get(`/app/${endpoint}`, async ctx => {
       ctx.status = 200;
-      // TODO: make request to db
       const context = {
-        title: 'Vue Page',
+        title: 'Reminder Manager',
         url: ctx.url,
-        // TODO: send data from db
-        testData: 'this is test string for initial render and store'
+        data: user
       };
      const page = await renderer.renderToString(context);
      ctx.body = page;
