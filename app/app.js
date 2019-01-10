@@ -5,8 +5,8 @@ import { createRouter } from './router';
 import { createStore } from './store';
 
 export function createApp (initData) {
-  const { url, data } = initData;
-  const router = createRouter(url);
+  const { data } = initData;
+  const router = createRouter();
   const store = createStore(data);
 
   sync(store, router);

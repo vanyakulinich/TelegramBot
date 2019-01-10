@@ -47,10 +47,12 @@ export default class Bot {
     // web link 
     this.bot.onText(botRegEx.link, async msg => {
       const user = await this.db.getUser(msg.chat.id);
-      const endpoint = `${msg.chat.id}_${Date.now()}`
-      await server.serve({ endpoint, user });
+      // TODO: implement token
+      const token = `${msg.chat.id}_${Date.now()}`
+      // TODO: implement connections in db
+      await server.serve(token, user);
       // TODO: implement real url when deploying
-      const link = `http://www.localhost:5000/app/${endpoint}` 
+      const link = `http://www.localhost:5000/app/${token}/reminder_manager`;
      
       this.bot.sendMessage(
         msg.chat.id,

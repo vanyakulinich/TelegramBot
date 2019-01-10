@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='home'>
     this is test page
   </div>
 </template>
@@ -11,9 +11,9 @@ export default {
 }
 </script>
 
-<style>
- div {
+<style scoped>
+ .home {
    color: red;
-   font-size: 40px;
+   font-size: 10px;
  }
 </style>
