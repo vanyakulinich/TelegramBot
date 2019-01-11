@@ -1,12 +1,17 @@
 <template>
-  <div class="personal">
+  <Layout class="personal">
     personal info page
-  </div>
+  </Layout>
 </template>
 
 <script>
+import Layout from './Layout.vue';
+
 export default {
-  name: 'personal_info'
+  name: 'personal_info',
+  components: {
+    Layout,
+  }
 }
 </script>
 

@@ -3,6 +3,7 @@
       <header class="header">
             <div class="nav-container">
                 <h1 class="title">Reminders Manager</h1>
+                <ReminderLogo />
                 <nav class="nav">
                   <router-link :to="`/app/${token}/reminder_manager`">Reminder Manager</router-link>
                   <router-link :to="`/app/${token}/personal_info`">Personal Information</router-link>
@@ -17,8 +18,14 @@
 </template>
 
 <script>
+
+import ReminderLogo from './components/icons/ReminderLogo.vue';
+
 export default {
   name: 'app',
+  components: {
+    ReminderLogo,
+  },
   computed: {
     token () {
       return this.$route.params.token

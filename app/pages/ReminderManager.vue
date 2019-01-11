@@ -1,12 +1,17 @@
 <template>
-  <div class="reminder">
+  <Layout class="reminder">
     reminder manager page
-  </div>
+  </Layout>
 </template>
 
 <script>
+import Layout from './Layout.vue';
+
 export default {
-  name: 'reminder_manager'
+  name: 'reminder_manager',
+  components: {
+    Layout
+  }
 }
 </script>
 
