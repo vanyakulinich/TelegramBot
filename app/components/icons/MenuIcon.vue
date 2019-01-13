@@ -38,6 +38,12 @@ export default {
     animation-iteration-count: infinite;
     animation-direction: alternate-reverse;
     animation-delay: 2s;
+    cursor: pointer;
+  }
+
+  .wrapper:active{
+    outline: none;
+    background-color: transparent;
   }
 
   @keyframes menu {

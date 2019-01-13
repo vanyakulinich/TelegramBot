@@ -2,7 +2,6 @@ import Koa from 'koa';
 import serve from 'koa-static';
 import mount from 'koa-mount';
 import Router from 'koa-router';
-import cors from 'koa2-cors';
 import fs from 'fs';
 import path from 'path';
 import { checkRoute } from '../helpers/serverHelpers';
@@ -29,11 +28,12 @@ const renderer = createBundleRenderer(bundle, {
 // TODO: remove console from listen method when app is finished
 server
   .use(mount("/dist", serve("./dist")))
-  .use(cors())
   .use(router.routes())
   .use(router.allowedMethods())
   .listen(PORT, () => console.log(`Server is on ${PORT} port`));
 
+
+  
 // construct server
 class Server {
   constructor(database) {
@@ -51,11 +51,10 @@ class Server {
           url: ctx.url,
           data: user,
         };
-       const page = await renderer.renderToString(context);
-       ctx.body = page;
-      } else {
-        ctx.status = 404;
+       ctx.body = await renderer.renderToString(context);
+       return;
       }
+      ctx.status = 404;
     })
   }
 }

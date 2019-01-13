@@ -2,16 +2,32 @@
   <div class="root">
     <header class="header">
       <div class="header_title">
-        <MenuIcon />
-        <h1 class="title">Reminders Manager</h1>
+        <MenuIcon
+          v-on:click="toggleMenu"
+          v-touch:tap="toggleMenu"
+        />
+        <h1 class="title">
+          Reminders Manager
+        </h1>
       </div>
 
-      <nav class="nav">
-        <router-link :to="`/app/${token}/reminder_manager`">Reminder Manager</router-link>
-        <router-link :to="`/app/${token}/personal_info`">Personal Information</router-link>
+      <nav 
+        class="nav" 
+        :style="{ height: this.isOpenMenu ? '180px' : '0px' }"
+      >
+        <router-link 
+          :to="`/app/${token}/reminder_manager`"
+        >
+          Reminder Manager
+        </router-link>
+        <router-link 
+          :to="`/app/${token}/personal_info`"
+        >
+          Personal Information
+        </router-link>
       </nav>
     </header>
-    <div class="layout">
+    <div class="content">
       <ReminderLogo />
       <transition name="fade" mode="out-in">
         <router-view class="view"></router-view>
@@ -31,9 +47,24 @@ export default {
     ReminderLogo,
     MenuIcon
   },
+  data() {
+    return {
+      isOpenMenu: false,
+    }
+  },
+  methods: {
+    toggleMenu: function(event) {
+      this.isOpenMenu = !this.isOpenMenu;
+    }
+  },
   computed: {
     token () {
-      return this.$route.params.token
+      return this.$route.params.token;
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      this.toggleMenu();
     }
   }
 }
@@ -48,7 +79,7 @@ export default {
     align-items: center;
     justify-content: center;
   }
-  .layout{
+  .content{
     position: relative;
     height: auto;
     min-height: 78vh;
@@ -61,6 +92,7 @@ export default {
   }
   .header{
     width: 90%;
+    position: relative;
   }
   .header_title{
     display: flex;
@@ -70,11 +102,24 @@ export default {
     color: rgba(128, 0, 128, 0.945);
     font-size: 67px;
     font-weight: 900;
-    margin-left: 3%;
+    margin: 0 0 0 3%;
     text-decoration: underline;
   }
   .nav{
-    display: inline-block;
-    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    transition: height 0.4s ease;
+    overflow: hidden;
+    font-size: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 9px;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+  .nav > a{
+    text-decoration: none;
+    color: rgba(49, 44, 44, 0.8);
+    margin-left: 30px;
   }
 </style>

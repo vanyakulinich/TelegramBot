@@ -3,10 +3,10 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-export const createStore = (initData) => {
+export const createStore = (data) => {
   return new Vuex.Store({
     state: {
-      initData
+      data
     },
     actions: {
       // TODO
