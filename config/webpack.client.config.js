@@ -23,26 +23,26 @@ module.exports = merge(baseConfig, {
 				)
 			}
 		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: 'manifest'
-		}),
-		new SWPrecachePlugin({
-			cacheId: 'headline-news',
-			filename: 'service-worker.js',
-			minify: 'true',
-			dontCacheBustUrlsMatching: /./,
-			staticFileGlobsIgnorePatterns: [/\.map$/, /\.json$/],
-			runtimeCaching: [
-				{
-					urlPattern: '/',
-					handler: 'networkFirst'
-				},
-				{
-					urlPattern: '/article/:source',
-					handler: 'networkFirst'
-				}
-			]
-		}),
+		// new webpack.optimize.CommonsChunkPlugin({
+		// 	name: 'manifest'
+		// }),
+		// new SWPrecachePlugin({
+		// 	cacheId: 'headline-news',
+		// 	filename: 'service-worker.js',
+		// 	minify: 'true',
+		// 	dontCacheBustUrlsMatching: /./,
+		// 	staticFileGlobsIgnorePatterns: [/\.map$/, /\.json$/],
+		// 	runtimeCaching: [
+		// 		{
+		// 			urlPattern: '/',
+		// 			handler: 'networkFirst'
+		// 		},
+		// 		{
+		// 			urlPattern: '/article/:source',
+		// 			handler: 'networkFirst'
+		// 		}
+		// 	]
+		// }),
 		new VueSSRClientPlugin()
 	]
 });

@@ -5,7 +5,8 @@ require('babel-register')({
         'targets': 
           {
             "node": "current"
-          }
+          },
+          "modules": "commonjs",
       }
     ],
   ]
