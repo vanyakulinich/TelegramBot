@@ -32,8 +32,6 @@ server
   .use(router.allowedMethods())
   .listen(PORT, () => console.log(`Server is on ${PORT} port`));
 
-
-  
 // construct server
 class Server {
   constructor(database) {

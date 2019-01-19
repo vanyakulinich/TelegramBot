@@ -1,11 +1,12 @@
 import Vue from 'vue';
-import Vue2TouchEvents from 'vue2-touch-events';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
 import App from './App.vue';
 import { sync } from 'vuex-router-sync';
 import { createRouter } from './router';
 import { createStore } from './store';
 
-Vue.use(Vue2TouchEvents);
+Vue.use(Vuetify);
 
 
 
