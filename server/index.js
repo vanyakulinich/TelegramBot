@@ -1,36 +1,82 @@
 import Koa from 'koa';
-import serve from 'koa-static';
-import mount from 'koa-mount';
 import Router from 'koa-router';
-import fs from 'fs';
-import path from 'path';
+import { Nuxt, Builder } from 'nuxt';
+import nuxtConfig from '../nuxt.config';
 import { checkRoute } from '../helpers/serverHelpers';
-
-// vue
-import { createBundleRenderer } from 'vue-server-renderer';
 
 const server = new Koa();
 const router = new Router({
-  prefix: '/app'
+  // prefix: '/app',
 });
-const PORT = process.env.PORT || 5000;
+nuxtConfig.dev = !(server.env === 'production')
 
-// vue sever renderer init
-const bundle = require('../dist/vue-ssr-server-bundle.json');
-const clientManifest = require('../dist/vue-ssr-client-manifest.json');
-const template = fs.readFileSync(path.resolve(__dirname, './index.template.html'), 'utf-8')
-const renderer = createBundleRenderer(bundle, {
-  runInNewContext: false,
-  clientManifest,
-  template,
-})
+
+const nuxt = new Nuxt(nuxtConfig);
+const {
+  host = process.env.HOST || '127.0.0.1',
+  port = process.env.PORT || 5000
+} = nuxt.options.server
+console.log(nuxt.options.server)
+// Build in development
+if (nuxtConfig.dev) {
+  console.log('builder')
+  const builder = new Builder(nuxt)
+  builder.build()
+}
+
+server
+  .use(async ctx => {
+    ctx.status = 200;
+    const validPath = checkRoute(ctx.request.path);
+      console.log(validPath)
+    return new Promise((resolve, reject) => {
+      ctx.req.user = {testUser: 'testData'};
+      ctx.res.on('close', resolve)
+      ctx.res.on('finish', resolve)
+      nuxt.render(ctx.req, ctx.res, promise => {
+        promise.then(resolve).catch(reject)
+      })
+    })
+  }) 
+  .listen(port, () => console.log(`Server is on ${port} port`));
+
+
+// app.listen(port);
+// console.log('Server listening on :' + port);
+
+// new Builder(nuxt).build();
 
 // TODO: remove console from listen method when app is finished
-server
-  .use(mount("/dist", serve("./dist")))
-  .use(router.routes())
-  .use(router.allowedMethods())
-  .listen(PORT, () => console.log(`Server is on ${PORT} port`));
+// server
+  // .use(mount("/public", serve("../public")))
+  // .use(router.routes())
+  // .use(router.allowedMethods())
+  // .use(async ctx => {
+  //   ctx.status = 200;
+  //   nuxt.render(ctx.req, ctx.res)
+  //     return new Promise((resolve, reject) => {
+  //       ctx.req.user = {data: 'from server'};
+  //       ctx.res.on('close', resolve)
+  //       ctx.res.on('finish', resolve)
+  //       nuxt.render(ctx.req, ctx.res, promise => {
+  //         promise.then(resolve).catch(reject)
+  //       })
+  //     })
+  //     // ctx.body = 'ok'
+  // })
+  // .listen(port, () => console.log(`Server is on ${port} port`));
+
+  // router.get(`/`, async ctx => {
+  //   ctx.status = 200;
+  //   return new Promise((resolve, reject) => {
+  //     ctx.req.user = {test: 'from server'};
+  //     ctx.res.on('close', resolve)
+  //     ctx.res.on('finish', resolve)
+  //     nuxt.render(ctx.req, ctx.res, promise => {
+  //       promise.then(resolve).catch(reject)
+  //     })
+  //   })
+  // })
 
 // construct server
 class Server {
@@ -38,22 +84,6 @@ class Server {
     this.server = server;
     this.router = router;
     this.db = database.getDB();
-  }
-  serve(token, user) {
-    this.router.get(`/:token/:path`, async ctx => {
-      const validPath = checkRoute(ctx.request.path);
-      if(validPath && token === validPath[2]) {
-        ctx.status = 200;
-        const context = {
-          title: 'Reminder Manager',
-          url: ctx.url,
-          data: user,
-        };
-       ctx.body = await renderer.renderToString(context);
-       return;
-      }
-      ctx.status = 404;
-    })
   }
 }
 

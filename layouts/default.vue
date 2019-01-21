@@ -8,7 +8,7 @@
       clipped-right
     >
       <v-toolbar-side-icon @click.stop="drawer = !drawer">
-        <v-icon x-large>home</v-icon>
+        <v-icon>mdi-menu</v-icon>
       </v-toolbar-side-icon>
       <v-toolbar-title>Your Personal Reminder Manager</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -17,26 +17,25 @@
       v-model="drawer"
       fixed
       app
+      class="menu"
     >
       <v-list dense>
-        <v-list-tile @click.stop="drawer = !drawer">
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <router-link 
-                :to="`/app/${token}/reminder_manager`"
-              >
-                Reminder Manager
-              </router-link>
-            </v-list-tile-title>
-            <v-list-tile-title>
-              <router-link 
-                :to="`/app/${token}/personal_info`"
-              >
-                Personal Info
-              </router-link>
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+        <v-list-tile-content>
+          <nuxt-link 
+            @click.stop="drawer = !drawer"
+            :to="`/app/${token}/reminder_manager`"
+            class="menu_link"
+          >
+            Reminder Manager
+          </nuxt-link>
+          <nuxt-link 
+            @click.stop="drawer = !drawer"
+            :to="`/app/${token}/personal_info`"
+            class="menu_link"
+          >
+            Personal Info
+          </nuxt-link>
+        </v-list-tile-content>
       </v-list>
     </v-navigation-drawer>
     <v-navigation-drawer
@@ -48,9 +47,7 @@
       <v-container fluid fill-height>
         <v-layout justify-center align-center>
           <v-flex shrink>
-            <transition name="fade" mode="out-in">
-              <router-view class="view"></router-view>
-            </transition>
+            <nuxt/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -62,9 +59,7 @@
 export default {
   name: 'layout',
   data: () => ({
-    drawer: null,
-    drawerRight: null,
-    right: false,
+    drawer: false,
     left: false,
   }),
   props: {
@@ -77,4 +72,19 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.icon {
+  z-index: 2;
+}
+.menu {
+  top: 65px;
+}
+  .menu_link {
+    text-decoration: none;
+    font-size: 30px;
+    margin: 10px;
+  }
+</style>
+
 

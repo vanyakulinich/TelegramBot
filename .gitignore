@@ -1,3 +1,15 @@
-node_modules/
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+
 api/config/
-dist/
+yarn-error.log
+assets
