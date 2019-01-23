@@ -3,8 +3,8 @@ const botCommands = {
   start: `'start' - the description of bot`,
   help: `'help' - the list of bot commands`,
   link: `'link' - web link to personal page`,
-  remind: `'remind [text of your reminder] [numeric date in format dd.mm.yyyy] [numeric time in format hh:mm]'`,
-}
+  remind: `'remind [text of your reminder] [numeric date in format dd.mm.yyyy] [numeric time in format hh:mm]'`
+};
 
 const listOfCommands = `
   The list of avaliable commands: 
@@ -56,7 +56,10 @@ export const messages = {
     Sorry, invalid time input. Please follow the syntax:
     ${botCommands.remind}
   `,
-  successReminder: (match) => `Congrats! New reminder "${match[1]}" is set up for ${match[2]} at ${match[3]}`,
+  successReminder: match =>
+    `Congrats! New reminder "${match[1]}" is set up for ${match[2]} at ${
+      match[3]
+    }`,
   activatedReminder: ({ text, date, time }) => `
     Hi!
   This is your reminder bot.
@@ -66,32 +69,33 @@ export const messages = {
   errorMsg: `Sorry, something went wrong...Please try again`
 };
 
-export const remindMessage =(dateValidation, timeValidation, match) => {
+export const remindMessage = (dateValidation, timeValidation, match) => {
   if (!timeValidation) return messages.invalidTime;
-  if (dateValidation) return (
-    (dateValidation.length) ? dateValidation : messages.successReminder(match)
-  );
+  if (dateValidation)
+    return dateValidation.length
+      ? dateValidation
+      : messages.successReminder(match);
   return messages.invalidRemind;
-}
+};
 
 export const manageValidations = (validatedDate, validatedTime) => {
   let defaultResult = {
     valid: false,
-    msg: ''
+    msg: ""
   };
-  if (!validatedTime)  {
+  if (!validatedTime) {
     defaultResult.msg = messages.invalidTime;
     return defaultResult;
   }
   if (validatedDate && validatedDate.length) defaultResult.msg = validatedDate;
-  if (validatedDate && typeof(validatedDate) === 'boolean') defaultResult.valid = true;
+  if (validatedDate && typeof validatedDate === "boolean")
+    defaultResult.valid = true;
   return defaultResult;
-}
+};
 
 export const botRegEx = {
   start: /\/start|[Ss]tart/,
   help: /\/help|[Hh]elp/,
   link: /[Ll]ink/,
-  remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
+  remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/
 };
-

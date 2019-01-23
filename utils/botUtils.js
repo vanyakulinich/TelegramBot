@@ -1,22 +1,20 @@
-import { createUTCDate, createMSDate } from './timeUtils';
+import { createUTCDate, createMSDate } from "./timeUtils";
 
 export function* watcherGenerator(bot) {
-  while(true) {
+  while (true) {
     let { id, time } = yield;
-    bot.nextReminder.timeoutID && 
-      clearTimeout(bot.nextReminder.timeoutID);
+    bot.nextReminder.timeoutID && clearTimeout(bot.nextReminder.timeoutID);
     bot.nextReminder = {
       id,
       time,
       timeoutID: setTimeout(() => {
         bot._activateClosestReminder(id, time);
-      }, (+time - Date.now()))
-    }  
+      }, +time - Date.now())
+    };
   }
 }
 
-
-export const newReminderFactory = (match) => {
+export const newReminderFactory = match => {
   const dateUTC = createUTCDate(match[2], match[3]);
   const dateMs = createMSDate(dateUTC);
   return {
@@ -25,6 +23,6 @@ export const newReminderFactory = (match) => {
     time: match[3],
     dateUTC,
     dateMs,
-    expired: false,
-  }
+    expired: false
+  };
 };

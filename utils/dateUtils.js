@@ -1,34 +1,33 @@
-import { messages } from '../helpers/botHelpers';
+import { messages } from "../helpers/botHelpers";
 
-export const validDate = (complexDate) => {
-  const dates = complexDate.split('.');
+export const validDate = complexDate => {
+  const dates = complexDate.split(".");
   const year = validYear(dates[2]);
   if (!year) return messages.pastYear;
   const month = validMonth(dates[1]);
   const days = validDays(dates[0], month, year);
-  if (days === 'noleap') return messages.noleapYear;
+  if (days === "noleap") return messages.noleapYear;
   const currentDate = new Date();
-  const notPastDay = (days >= currentDate.getDate());
-  const notPastMonth = (month >= currentDate.getMonth() + 1);
+  const notPastDay = days >= currentDate.getDate();
+  const notPastMonth = month >= currentDate.getMonth() + 1;
   return (
-    year && 
-    month && 
-    notPastMonth && 
-    days && 
-    (notPastMonth ? true : notPastDay)
+    year && month && notPastMonth && days && (notPastMonth ? true : notPastDay)
   );
 };
 
-export const validYear = (year) => (+year >= new Date().getFullYear() ? +year : false);
-export const validMonth = (month) => (+month >= 1 && +month <= 12) ? +month : false;
+export const validYear = year =>
+  +year >= new Date().getFullYear() ? +year : false;
+export const validMonth = month =>
+  +month >= 1 && +month <= 12 ? +month : false;
 export const validDays = (inputDay, month, year) => {
   if (!month) return false;
   const days = checkDaysInMonth(month, year);
-  return (month === 2 && +inputDay === 29 && !isLeapYear(year)) ? 
-    'noleap' :
-    (+inputDay > 0 && +inputDay <= days) ? +inputDay : false;
+  return month === 2 && +inputDay === 29 && !isLeapYear(year)
+    ? "noleap"
+    : +inputDay > 0 && +inputDay <= days
+    ? +inputDay
+    : false;
 };
-
 
 export const checkDaysInMonth = (month, year) => {
   if (isLeapYear(year) && month === 2) return 29;
@@ -37,4 +36,4 @@ export const checkDaysInMonth = (month, year) => {
   return 31;
 };
 
-export const isLeapYear = (year) => (year % 4 === 0); 
+export const isLeapYear = year => year % 4 === 0;

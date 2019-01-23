@@ -1,27 +1,30 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-const store = () => new Vuex.Store({
-
-  state: {
-    user: {
-      test: 'test'
-    }
-  },
-  actions: {
-    nuxtServerInit ({ commit }, { req }) {
-      console.log(req.user)
-      if (req && req.user) {
-        // commit('user', req.user)
-        commit('user', {test: 'test2'})
+const store = () =>
+  new Vuex.Store({
+    state: {
+      data: {
+        user: null,
+        token: null
       }
-      // console.log('store', this.store)
+    },
+    actions: {
+      nuxtServerInit({ commit }, { req }) {
+        if (req && req.initData) {
+          const { user, token } = req.initData;
+          commit("data", {
+            user,
+            token
+          });
+        }
+      }
+    },
+    mutations: {
+      data: (state, payload) => (state.data = { ...payload })
     }
-  },
-  mutations: {
-  }
-})
+  });
 
-export default store
+export default store;

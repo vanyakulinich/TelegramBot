@@ -1,7 +1,5 @@
 <template>
-  <h1>
-    reminder_manager
-  </h1>
+  <h1>reminder_manager</h1>
 </template>
 
 

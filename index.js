@@ -1,9 +1,11 @@
-import {Bot, db } from './api';
-import Server from './server';
+import { Bot, Database } from "./api";
+import Server from "./server";
 
 // init
-const bot = new Bot(db);
-const server = new Server(db);
+const database = new Database();
+const bot = new Bot(database);
+const server = new Server(database);
 
 // start
-bot.start(server);
+bot.start();
+server.start();
