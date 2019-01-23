@@ -33,15 +33,19 @@ export default class Server {
       .use(this.router.allowedMethods())
       .use(async ctx => {
         ctx.status = 200;
-        const validPath = checkRoute(ctx.request.path);
-        if (validPath) {
-          const token = validPath[2];
-          // TODO: db request for user data
+        const publicToken = checkRoute(ctx.request.path);
+        if (publicToken) {
+          const initData = await this.db.getUserDataForWebApp(publicToken);
+          console.log(initData);
           // temporary mocked
-          ctx.req.initData = {
-            user: "new user",
-            token
+          const mockedData = {
+            personal: "mock",
+            reminders: "mock",
+            tokens: "mock"
           };
+          ctx.req.initData = mockedData;
+          // ctx.req.initData = { ...initData };
+          // TODO: if no initData, render 404 page
         }
         return new Promise((resolve, reject) => {
           ctx.res.on("close", resolve);

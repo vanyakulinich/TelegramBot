@@ -6,24 +6,18 @@ Vue.use(Vuex);
 const store = () =>
   new Vuex.Store({
     state: {
-      data: {
-        user: null,
-        token: null
-      }
+      data: null
     },
     actions: {
       nuxtServerInit({ commit }, { req }) {
         if (req && req.initData) {
-          const { user, token } = req.initData;
-          commit("data", {
-            user,
-            token
-          });
+          const { initData } = req;
+          commit("data", { ...initData });
         }
       }
     },
     mutations: {
-      data: (state, payload) => (state.data = { ...payload })
+      data: (state, payload) => (state.data = payload)
     }
   });
 

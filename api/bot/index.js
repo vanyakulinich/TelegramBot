@@ -45,14 +45,13 @@ export default class Bot {
 
     // web link
     this.bot.onText(botRegEx.link, async msg => {
-      const user = await this.db.getUser(msg.chat.id);
-      // TODO: implement token
-      const token = `${this._setWebAppConnection()}`;
-      // TODO: implement connections in db
-
+      const linkPart = await this._setWebAppConnection(msg.chat.id);
+      if (!linkPart) {
+        this.bot.sendMessage(msg.chat.id, messages.errorMsg);
+        return;
+      }
       // TODO: implement real url when deploying
-      const link = `http://www.localhost:3000/app/${token}/reminder_manager`;
-
+      const link = `http://www.localhost:3000/app/${linkPart}/reminder_manager`;
       this.bot.sendMessage(msg.chat.id, `[${messages.link}](${link})`, {
         parse_mode: "Markdown"
       });
@@ -126,9 +125,15 @@ export default class Bot {
       this.watcher.next({ id: newId, time: newTime });
     }
   }
-  _setWebAppConnection() {
-    const token = this.tokgen.generate();
-    // TODO: implement db record of token to connections
-    return token;
+  async _setWebAppConnection(id) {
+    const tokens = {
+      publicToken: this.tokgen.generate(),
+      privateToken: this.tokgen.generate()
+    };
+    const dbResponse = await this.db.setUpWebConnection({
+      tokens,
+      id
+    });
+    return dbResponse;
   }
 }

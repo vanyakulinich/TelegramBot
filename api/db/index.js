@@ -1,5 +1,10 @@
 import { firebase } from "../config/db";
-import { path, newUserFactory } from "../../utils/dbUtils";
+import {
+  path,
+  newUserFactory,
+  webConnectFactory,
+  webDataFactory
+} from "../../utils/dbUtils";
 
 export default class Database {
   constructor() {
@@ -10,26 +15,25 @@ export default class Database {
     return this;
   }
 
-  getUser(id) {
-    const user = this.db.ref(path.user(id));
+  async getUser(id) {
+    const user = await this.db.ref(path.user(id));
     return user.once("value").then(data => data.val(), err => false);
   }
 
-  startNewUser(userData) {
-    const { id, first_name, last_name } = userData;
-    const users = this.db.ref(path.users());
+  async startNewUser(userData) {
+    const users = await this.db.ref(path.users());
     return users.once("value").then(
       data => {
-        !data.child(id).exists() &&
-          users.update(newUserFactory(id, first_name, last_name));
+        !data.child(userData.id).exists() &&
+          users.update(newUserFactory(userData));
         return true;
       },
       err => false
     );
   }
 
-  setNewReminder(id, reminder) {
-    const reminders = this.db.ref(path.reminders(id));
+  async setNewReminder(id, reminder) {
+    const reminders = await this.db.ref(path.reminders(id));
     return reminders.once("value").then(
       data => {
         const existingReminders = data.val();
@@ -114,28 +118,72 @@ export default class Database {
       });
   }
 
-  findClosestReminderInUsers() {
-    const users = this.db.ref(path.users());
+  async findClosestReminderInUsers() {
+    const users = await this.db.ref(path.users());
     return users
       .once("value")
       .then(data => data.val())
-      .then(users => {
-        const usersIds = Object.keys(users);
-        const newNextReminder = {
-          time: 0,
-          id: null
-        };
-        usersIds.forEach(user => {
-          if (
-            !newNextReminder.time ||
-            (users[user].nextReminder &&
-              users[user].nextReminder < newNextReminder.time)
-          ) {
-            newNextReminder.time = users[user].nextReminder || null;
-            newNextReminder.id = user;
+      .then(
+        users => {
+          const usersIds = Object.keys(users);
+          const newNextReminder = {
+            time: 0,
+            id: null
+          };
+          usersIds.forEach(user => {
+            if (
+              !newNextReminder.time ||
+              (users[user].nextReminder &&
+                users[user].nextReminder < newNextReminder.time)
+            ) {
+              newNextReminder.time = users[user].nextReminder || null;
+              newNextReminder.id = user;
+            }
+          });
+          return newNextReminder;
+        },
+        err => false
+      );
+  }
+  // web
+  async setUpWebConnection({ tokens, id }) {
+    const webConnect = webConnectFactory(tokens);
+    const user = await this.db.ref(path.user(id));
+    user.update({ webConnect }, err => false);
+    return user ? tokens.publicToken : user;
+  }
+
+  async getUserDataForWebApp(urlToken) {
+    const users = await this.db.ref(path.users());
+    return users
+      .once("value")
+      .then(data => data.val())
+      .then(
+        users => {
+          const userIds = Object.keys(users);
+          const matchedId = userIds.find(
+            id =>
+              users[id].webConnect &&
+              users[id].webConnect.publicToken === urlToken
+          );
+          const isExpiredLink = this._checkLinkExpiration(
+            users[matchedId].webConnect
+          );
+          // TODO: handle with link lifetime and set db watchers
+          if (isExpiredLink) {
+            this.db.ref(path.user(matchedId)).update({ webConnect: null });
+            return false;
           }
-        });
-        return newNextReminder;
-      });
+          matchedId &&
+            this.db.ref(path.web(matchedId)).update({ isConnected: true });
+          return matchedId && webDataFactory(users[matchedId]);
+        },
+        err => false
+      );
+  }
+
+  _checkLinkExpiration(data) {
+    const { askLinkTime, linkLifeTime } = data;
+    return askLinkTime + linkLifeTime < Date.now();
   }
 }
