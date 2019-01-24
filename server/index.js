@@ -35,15 +35,9 @@ export default class Server {
         ctx.status = 200;
         const publicToken = checkRoute(ctx.request.path);
         if (publicToken) {
-          const initData = await this.db.getUserDataForWebApp(publicToken);
-          console.log(initData);
+          // const initData = await this.db.getUserDataForWebApp(publicToken);
+          // console.log(initData);
           // temporary mocked
-          const mockedData = {
-            personal: "mock",
-            reminders: "mock",
-            tokens: "mock"
-          };
-          ctx.req.initData = mockedData;
           // ctx.req.initData = { ...initData };
           // TODO: if no initData, render 404 page
         }
