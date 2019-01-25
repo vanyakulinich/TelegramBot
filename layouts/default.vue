@@ -45,10 +45,12 @@
       </v-container>
     </v-navigation-drawer>
     <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
-      <v-toolbar-side-icon
-        v-if="primaryDrawer.type !== 'permanent'"
-        @click.stop="primaryDrawer.model = !primaryDrawer.model"
-      ></v-toolbar-side-icon>
+      <div v-if="!error">
+        <v-toolbar-side-icon
+          v-if="primaryDrawer.type !== 'permanent'"
+          @click.stop="primaryDrawer.model = !primaryDrawer.model"
+        ></v-toolbar-side-icon>
+      </div>
       <v-toolbar-title>
         <span class="toolbar_title">Reminder Manager</span>
       </v-toolbar-title>
@@ -80,11 +82,15 @@ export default {
       clipped: false,
       floating: false,
       mini: false
-    }
+    },
+    isError: false
   }),
   computed: {
     token() {
       return this.$route.params.token;
+    },
+    error() {
+      return this.$nuxt.nuxt.err;
     }
   }
 };
@@ -124,7 +130,7 @@ export default {
 }
 .toolbar_title {
   font-family: "Indie Flower", cursive;
-  font-size: 26px;
+  font-size: 30px;
 }
 .content_wrap {
   font-family: "Gloria Hallelujah", cursive;
