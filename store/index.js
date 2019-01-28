@@ -11,7 +11,11 @@ const store = () =>
       data: {
         personal: {
           firstName: "Ivan",
-          lastName: "Kulinich"
+          lastName: "Kulinich",
+          extra: {
+            phone: "111111111111",
+            email: "test@test.test"
+          }
         },
         reminders: {
           12345: {
@@ -39,6 +43,10 @@ const store = () =>
     },
     mutations: {
       data: (state, payload) => (state.data = { ...payload })
+    },
+    getters: {
+      personalInfo: state => state.data.personal,
+      reminders: state => state.data.reminders
     }
   });
 
