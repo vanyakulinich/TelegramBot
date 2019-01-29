@@ -39,11 +39,15 @@ const store = () =>
           const { initData } = req;
           commit("data", initData);
         }
+      },
+      setPersonalInfo({ commit }, data) {
+        // TODO: implement server req
+        commit("personalInfo", data);
       }
     },
     mutations: {
       data: (state, payload) => (state.data = { ...payload }),
-      setPersonalInfo: (state, payload) => {
+      personalInfo: (state, payload) => {
         const { extra } = state.data.personal;
         state.data.personal = {
           ...state.data.personal,

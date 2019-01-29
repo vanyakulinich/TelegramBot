@@ -8,12 +8,20 @@
     </div>
     <div v-if="personal.extra" class="extraInfo">
       <div>
-        <div class="extra_item" v-for="(item, itemKey) in personal.extra" :key="item">
+        <div
+          class="extra_item"
+          v-for="(item, itemKey) in personal.extra"
+          :key="item"
+          @click="select(itemKey)"
+          :class="selected[itemKey] && selected[itemKey] === item ? 'active_item' : ''"
+        >
           <span class="field_title">{{itemKey}}:</span>
           {{item}}
         </div>
       </div>
-      <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
+      <div class="modal_wrap">
+        <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
+      </div>
     </div>
   </div>
 </template>
@@ -25,6 +33,18 @@ export default {
   name: "personal",
   components: {
     PersonalInfoModal
+  },
+  data() {
+    return {
+      selected: {}
+    };
+  },
+  methods: {
+    select(itemKey) {
+      this.selected = {
+        [itemKey]: this.personal.extra[itemKey]
+      };
+    }
   },
   computed: {
     ...mapGetters({ personal: "personalInfo" })
@@ -60,5 +80,12 @@ export default {
   text-transform: lowercase;
   opacity: 0.5;
   font-size: 16px;
+}
+.modal_wrap {
+  margin-top: 30px;
+}
+.active_item {
+  /* border: 1px solid red; */
+  text-shadow: 0px 0px 20px #d3dfff;
 }
 </style>

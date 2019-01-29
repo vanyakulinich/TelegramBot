@@ -3,7 +3,9 @@
     <v-dialog v-model="dialog" persistent max-width="290">
       <v-btn slot="activator" :color="buttonColor" dark>{{buttonText}}</v-btn>
       <v-card>
-        <v-card-title class="headline">Add new personal inforamtion</v-card-title>
+        <v-card-title class="headline">
+          <div class="dialog">Add new personal inforamtion</div>
+        </v-card-title>
         <v-card-text>
           <v-flex xs12 sm6 md3>
             <v-text-field
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions } from "vuex";
 export default {
   name: "personalInfoModal",
   data() {
@@ -61,7 +63,7 @@ export default {
       this.info = "";
       this.dialog = false;
     },
-    ...mapMutations(["setPersonalInfo"])
+    ...mapActions(["setPersonalInfo"])
   },
   props: {
     buttonText: {
@@ -75,3 +77,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-text-field,
+.dialog,
+.v-btn {
+  font-family: "Indie Flower", cursive;
+}
+.v-btn {
+  font-size: 20px;
+  font-weight: 600;
+}
+</style>
