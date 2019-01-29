@@ -3,12 +3,25 @@
     <v-dialog v-model="dialog" persistent max-width="290">
       <v-btn slot="activator" :color="buttonColor" dark>{{buttonText}}</v-btn>
       <v-card>
-        <v-card-title class="headline">Use Google's location service?</v-card-title>
-        <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
+        <v-card-title class="headline">Add new personal inforamtion</v-card-title>
+        <v-card-text>
+          <v-flex xs12 sm6 md3>
+            <v-text-field
+              label="field name"
+              color="grey lighten-1"
+              @input="changeField"
+              :value="field"
+            ></v-text-field>
+          </v-flex>
+
+          <v-flex xs12 sm6 md3>
+            <v-text-field label="info" color="grey lighten-1" @input="changeInfo" :value="info"></v-text-field>
+          </v-flex>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click="dialog = false">cancel</v-btn>
-          <v-btn color="green darken-1" flat @click="dialog = false">add</v-btn>
+          <v-btn color="blue-grey lighten-3" flat @click="closeDialog">cancel</v-btn>
+          <v-btn color="blue-grey lighten-3" flat @click="addNewInfo">add</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -16,12 +29,39 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 export default {
   name: "personalInfoModal",
   data() {
     return {
-      dialog: false
+      dialog: false,
+      field: "",
+      info: ""
     };
+  },
+  methods: {
+    changeField(value) {
+      this.field = value;
+    },
+    changeInfo(value) {
+      this.info = value;
+    },
+    addNewInfo() {
+      const payload = {
+        [this.field]: this.info
+      };
+      this.setPersonalInfo(payload);
+      this.clear();
+    },
+    closeDialog() {
+      this.clear();
+    },
+    clear() {
+      this.field = "";
+      this.info = "";
+      this.dialog = false;
+    },
+    ...mapMutations(["setPersonalInfo"])
   },
   props: {
     buttonText: {

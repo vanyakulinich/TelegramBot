@@ -42,7 +42,17 @@ const store = () =>
       }
     },
     mutations: {
-      data: (state, payload) => (state.data = { ...payload })
+      data: (state, payload) => (state.data = { ...payload }),
+      setPersonalInfo: (state, payload) => {
+        const { extra } = state.data.personal;
+        state.data.personal = {
+          ...state.data.personal,
+          extra: {
+            ...extra,
+            ...payload
+          }
+        };
+      }
     },
     getters: {
       personalInfo: state => state.data.personal,
