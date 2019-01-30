@@ -1,5 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import mutations from "./mutations";
+import actions from "./actions";
+import getters from "./getters";
 
 Vue.use(Vuex);
 
@@ -18,7 +21,7 @@ const store = () =>
           }
         },
         reminders: {
-          12345: {
+          1548882567989: {
             text: "test reminder test",
             date: "Date format in ISO string",
             time: "Time in format hh:mm",
@@ -33,35 +36,9 @@ const store = () =>
         }
       }
     },
-    actions: {
-      nuxtServerInit({ commit }, { req }) {
-        if (req && req.initData) {
-          const { initData } = req;
-          commit("data", initData);
-        }
-      },
-      setPersonalInfo({ commit }, data) {
-        // TODO: implement server req
-        commit("personalInfo", data);
-      }
-    },
-    mutations: {
-      data: (state, payload) => (state.data = { ...payload }),
-      personalInfo: (state, payload) => {
-        const { extra } = state.data.personal;
-        state.data.personal = {
-          ...state.data.personal,
-          extra: {
-            ...extra,
-            ...payload
-          }
-        };
-      }
-    },
-    getters: {
-      personalInfo: state => state.data.personal,
-      reminders: state => state.data.reminders
-    }
+    actions: { ...actions },
+    mutations: { ...mutations },
+    getters: { ...getters }
   });
 
 export default store;

@@ -1,7 +1,7 @@
 import Promise from "bluebird";
 import TelegramBot from "node-telegram-bot-api";
 import TokenGenerator from "uuid-token-generator";
-import { BOT_KEY } from "../config/bot";
+import { BOT_KEY } from "../../config/bot";
 import {
   messages,
   botRegEx,

@@ -10,6 +10,6 @@ npm-debug.log
 # Nuxt generate
 dist
 
-api/config/
 yarn-error.log
 assets
+config

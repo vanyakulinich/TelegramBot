@@ -1,4 +1,4 @@
-import { firebase } from "../config/db";
+import { firebase } from "../../config/db";
 import {
   path,
   newUserFactory,
