@@ -1,5 +1,5 @@
 import types from "./types";
-const mutations = {
+export const mutations = {
   [types.DATA]: (state, payload) => (state.data = { ...payload }),
   [types.PERSONAL_INFO]: (state, payload) => {
     const { extra } = state.data.personal;
@@ -12,5 +12,3 @@ const mutations = {
     };
   }
 };
-
-export default mutations;

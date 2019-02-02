@@ -67,7 +67,7 @@ export default class Bot {
         return;
       }
       const newReminder = newReminderFactory(match);
-      const dbResponse = await this.db.setNewReminder(msg.chat.id, newReminder);
+      const dbResponse = await this.db.manageReminder(msg.chat.id, newReminder);
       this._watchReminders(msg.chat.id, newReminder.dateMs);
       this.bot.sendMessage(
         msg.chat.id,
@@ -91,7 +91,7 @@ export default class Bot {
 
     this.watcher.next();
   }
-
+  // private methods
   _watchReminders(newReminderId, newReminderTime) {
     return !this.nextReminder.time && !this.nextReminder.userId
       ? this.watcher.next({
@@ -125,6 +125,7 @@ export default class Bot {
       this.watcher.next({ id: newId, time: newTime });
     }
   }
+  // webapp
   async _setWebAppConnection(id) {
     const tokens = {
       publicToken: this.tokgen.generate(),

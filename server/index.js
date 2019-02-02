@@ -1,46 +1,34 @@
 import Koa from "koa";
-import Router from "koa-router";
 import { Nuxt, Builder } from "nuxt";
+import bodyParser from "koa-bodyparser";
 import nuxtConfig from "../nuxt.config";
-import { checkRoute } from "../helpers/serverHelpers";
+import { parseToken } from "../helpers/serverHelpers";
+import { ApiRouter } from "./router";
 
 export default class Server {
   constructor(database) {
     this.server = new Koa();
-    this.router = new Router();
+    this.router = new ApiRouter(database).getRouter();
     this.nuxt = new Nuxt(nuxtConfig);
     this.db = database.getDB();
   }
 
-  _getInitUserData() {
-    // this.db
-    // TODO: implement db request
-  }
-
   start() {
     nuxtConfig.dev = !(this.server.dev === "production");
-    const { port = process.env.PORT || 5000 } = this.nuxt.options.server;
+    const { port = process.env.PORT || 3000 } = this.nuxt.options.server;
 
     if (nuxtConfig.dev) new Builder(this.nuxt).build();
-    // TODO: implement routes for db data changes from app
-    this.router.get("/api", async ctx => {
-      ctx.status = 200;
-      ctx.body = ctx.request.path;
-    });
-
     this.server
+      .use(bodyParser())
       .use(this.router.routes())
       .use(this.router.allowedMethods())
       .use(async ctx => {
-        ctx.status = 200;
-        const publicToken = checkRoute(ctx.request.path);
-        if (publicToken) {
-          // const initData = await this.db.getUserDataForWebApp(publicToken);
-          // console.log(initData);
-          // temporary mocked
-          // ctx.req.initData = { ...initData };
-          // TODO: if no initData, render 404 page
-        }
+        const token = parseToken(ctx.request.path);
+        const initData = token
+          ? await this.db.getInitUserDataForWebApp(token)
+          : null;
+        ctx.status = initData ? 200 : 404;
+        ctx.req.initData = { ...initData };
         return new Promise((resolve, reject) => {
           ctx.res.on("close", resolve);
           ctx.res.on("finish", resolve);

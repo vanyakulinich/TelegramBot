@@ -4,6 +4,7 @@ export const path = {
   reminders: id => `/users/${id}/reminders`,
   reminderId: (id, remId) => `/users/${id}/reminders/${remId}`,
   nextReminder: id => `/users/${id}/nextReminder`,
+  personal: id => `/users/${id}/personal`,
   web: id => `/users/${id}/webConnect`
 };
 
@@ -18,8 +19,8 @@ export const newUserFactory = ({ id, first_name, last_name }) => ({
   }
 });
 
-export const webConnectFactory = ({ publicToken, privateToken }) => ({
-  isConnected: false,
+export const webConnectFactory = ({ id, publicToken, privateToken }) => ({
+  id,
   publicToken,
   privateToken,
   askLinkTime: Date.now(),
@@ -28,13 +29,19 @@ export const webConnectFactory = ({ publicToken, privateToken }) => ({
 
 export const webDataFactory = user => {
   const { personal, reminders, webConnect } = user;
-  const { publicToken, privateToken } = webConnect;
+  const { publicToken, privateToken, id } = webConnect;
   return {
     personal,
     reminders,
     tokens: {
       publicToken,
-      privateToken
+      privateToken,
+      id
     }
   };
+};
+
+export const checkLinkLifeTime = data => {
+  const { askLinkTime, linkLifeTime } = data;
+  return askLinkTime + linkLifeTime > Date.now();
 };
