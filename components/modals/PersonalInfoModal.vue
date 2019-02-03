@@ -4,26 +4,32 @@
       <v-btn slot="activator" :color="buttonColor" dark>{{buttonText}}</v-btn>
       <v-card>
         <v-card-title class="headline">
-          <div class="dialog">Add new personal inforamtion</div>
+          <div class="dialog">{{selected ? "Edit" : "Add new"}} personal inforamtion</div>
         </v-card-title>
         <v-card-text>
           <v-flex xs12 sm6 md3>
             <v-text-field
+              :disabled="!!selected"
               label="field name"
               color="grey lighten-1"
               @input="changeField"
-              :value="field"
+              :value="selected ? selected.name : name"
             ></v-text-field>
           </v-flex>
 
           <v-flex xs12 sm6 md3>
-            <v-text-field label="info" color="grey lighten-1" @input="changeInfo" :value="info"></v-text-field>
+            <v-text-field
+              label="info"
+              color="grey lighten-1"
+              @input="changeInfo"
+              :value="selected ? selected.value : value"
+            ></v-text-field>
           </v-flex>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue-grey lighten-3" flat @click="closeDialog">cancel</v-btn>
-          <v-btn color="blue-grey lighten-3" flat @click="addNewInfo">add</v-btn>
+          <v-btn color="blue-grey lighten-3" flat @click="addNewInfo">{{selected ? "save" : "add"}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -37,20 +43,21 @@ export default {
   data() {
     return {
       dialog: false,
-      field: "",
-      info: ""
+      name: "",
+      value: ""
     };
   },
   methods: {
     changeField(value) {
-      this.field = value;
+      this.name = value;
     },
     changeInfo(value) {
-      this.info = value;
+      this.value = value;
     },
     addNewInfo() {
+      const name = this.selected ? this.selected.name : this.name;
       const payload = {
-        [this.field]: this.info
+        [name]: this.value
       };
       this.setPersonalInfo(payload);
       this.clear();
@@ -73,6 +80,10 @@ export default {
     buttonColor: {
       type: String,
       default: ""
+    },
+    selected: {
+      type: Object | null,
+      default: null
     }
   }
 };

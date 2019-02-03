@@ -1,4 +1,6 @@
 import types from "./types";
+import { getters } from "./getters";
+import { apiEndpoints } from "../config/api";
 export const actions = {
   nuxtServerInit({ commit }, { req }) {
     if (req && req.initData) {
@@ -6,11 +8,12 @@ export const actions = {
       commit(types.DATA, initData);
     }
   },
-  async setPersonalInfo({ commit }, data) {
-    console.log(data);
-    const apiR = await this.$axios.$get("/");
-    console.log(apiR);
-    // TODO: implement server req
-    commit(types.PERSONAL_INFO, data);
+  async setPersonalInfo({ commit, state }, data) {
+    const tokens = await getters.tokens(state);
+    const response = await this.$axios.$post(`/${apiEndpoints.personal}`, {
+      tokens,
+      data
+    });
+    commit(types.PERSONAL_INFO, response);
   }
 };

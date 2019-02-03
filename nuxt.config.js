@@ -1,4 +1,4 @@
-import { baseURL } from "./config/axios";
+import { baseURL } from "./config/api";
 module.exports = {
   /*
    ** Headers of the page

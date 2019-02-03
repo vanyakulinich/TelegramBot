@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="personal" @click="eraseSelected">
     <div class="title_personal">Personal Info</div>
 
     <div class="names">
@@ -7,27 +7,42 @@
       {{personal.firstName}} {{personal.lastName}}
     </div>
     <div v-if="personal.extra" class="extraInfo">
-      <div>
-        <div
-          class="extra_item"
-          v-for="(item, itemKey) in personal.extra"
-          :key="item"
-          @click="select(itemKey)"
-          :class="selected[itemKey] && selected[itemKey] === item ? 'active_item' : ''"
-        >
+      <div
+        class="extra_item"
+        v-for="(item, itemKey) in personal.extra"
+        :key="item"
+        @click="select(itemKey, item, $event)"
+        :class="selected && selected.name === itemKey && selected.value === item ? 'active_item' : ''"
+      >
+        <div>
           <span class="field_title">{{itemKey}}:</span>
           {{item}}
+        </div>
+        <div
+          class="edit_delete_wrap"
+          v-if="selected && selected.name === itemKey && selected.value === item"
+        >
+          <div>
+            <PersonalInfoModal
+              buttonText="Edit"
+              buttonColor="blue-grey lighten-3"
+              :selected="selected"
+            />
+          </div>
+          <v-btn color="blue-grey lighten-3" @click="deleteSelected">Delete</v-btn>
         </div>
       </div>
     </div>
     <div class="modal_wrap">
-      <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
+      <div>
+        <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import PersonalInfoModal from "../../../../components/modals/PersonalInfoModal.vue";
 export default {
   name: "personal",
@@ -36,15 +51,26 @@ export default {
   },
   data() {
     return {
-      selected: {}
+      selected: null
     };
   },
   methods: {
-    select(itemKey) {
+    select(itemKey, item, event) {
+      event.stopPropagation();
       this.selected = {
-        [itemKey]: this.personal.extra[itemKey]
+        name: itemKey,
+        value: item
       };
-    }
+    },
+    deleteSelected() {
+      this.setPersonalInfo({
+        [this.selected.name]: null
+      });
+    },
+    eraseSelected() {
+      if (this.selected) this.selected = null;
+    },
+    ...mapActions(["setPersonalInfo"])
   },
   computed: {
     ...mapGetters({ personal: "personalInfo" })
@@ -70,6 +96,8 @@ export default {
 .extra_item {
   width: fit-content;
   font-size: 22px;
+  margin: 10px 0;
+  cursor: pointer;
 }
 .extraInfo {
   display: flex;
@@ -83,9 +111,14 @@ export default {
 }
 .modal_wrap {
   margin-top: 30px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+.edit_delete_wrap {
+  display: flex;
 }
 .active_item {
-  /* border: 1px solid red; */
   text-shadow: 0px 0px 20px #d3dfff;
 }
 </style>

@@ -9,9 +9,9 @@ import { ApiRouter } from "./router";
 export default class Server {
   constructor(database) {
     this.server = new Koa();
-    this.router = new ApiRouter(database).getRouter();
     this.nuxt = new Nuxt(nuxtConfig);
     this.db = database.getDB();
+    this.router = new ApiRouter(this.db).getRouter();
   }
 
   start() {

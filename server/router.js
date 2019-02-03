@@ -1,30 +1,31 @@
 import Router from "koa-router";
+import { apiMethods, apiEndpoints } from "../config/api";
 
 export class ApiRouter {
   constructor(db) {
     this.router = new Router({
       prefix: "/api"
     });
-    this.methods = ["post", "put", "delete"];
-    this.endpoints = ["reminder", "personal"];
     this.db = db;
   }
 
-  _createRoute({ endpoint, method, databaseCB }) {
+  _createRoute({ endpoint, method }) {
     this.router[method](`/${endpoint}`, async ctx => {
       ctx.status = 200;
       const { body } = ctx.request;
-      const response = await databaseCB({ ...body, type: endpoint });
+      const response = await this.db.manageDataFromWebRequest({
+        ...body,
+        type: endpoint
+      });
       ctx.body = response;
     });
   }
 
   _createEndpointRoutes(endpoint) {
-    this.methods.forEach(method => {
+    apiMethods.forEach(method => {
       this._createRoute({
         endpoint,
-        method,
-        databaseCB: this.db.manageDataFromWebRequest
+        method
       });
     });
   }
@@ -35,10 +36,17 @@ export class ApiRouter {
   }
 
   initRoutes() {
-    this.endpoints.forEach(endpoint => this._createEndpointRoutes(endpoint));
+    Object.keys(apiEndpoints).forEach(endpoint =>
+      this._createEndpointRoutes(endpoint)
+    );
+    // test route
     this.router.get("/", async ctx => {
       ctx.status = 200;
-      ctx.body = "WORKS";
+      ctx.body = await this.db.getUser(565484466);
+    });
+    this.router.post("/", async ctx => {
+      ctx.status = 200;
+      console.log("END");
     });
   }
 }
