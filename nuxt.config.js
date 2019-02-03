@@ -1,3 +1,4 @@
+import { baseURL } from "./config/axios";
 module.exports = {
   /*
    ** Headers of the page
@@ -19,6 +20,7 @@ module.exports = {
     ]
   },
   plugins: ["~plugins/vuetify.js"],
+  modules: [["@nuxtjs/axios", { baseURL }]],
   /*
    ** Customize the progress bar color
    */

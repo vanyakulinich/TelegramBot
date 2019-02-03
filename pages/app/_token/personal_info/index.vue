@@ -19,9 +19,9 @@
           {{item}}
         </div>
       </div>
-      <div class="modal_wrap">
-        <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
-      </div>
+    </div>
+    <div class="modal_wrap">
+      <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
     </div>
   </div>
 </template>

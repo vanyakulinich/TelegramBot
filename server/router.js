@@ -36,5 +36,9 @@ export class ApiRouter {
 
   initRoutes() {
     this.endpoints.forEach(endpoint => this._createEndpointRoutes(endpoint));
+    this.router.get("/", async ctx => {
+      ctx.status = 200;
+      ctx.body = "WORKS";
+    });
   }
 }

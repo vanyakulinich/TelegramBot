@@ -1,4 +1,5 @@
 import Koa from "koa";
+import cors from "@koa/cors";
 import { Nuxt, Builder } from "nuxt";
 import bodyParser from "koa-bodyparser";
 import nuxtConfig from "../nuxt.config";
@@ -19,16 +20,17 @@ export default class Server {
 
     if (nuxtConfig.dev) new Builder(this.nuxt).build();
     this.server
+      .use(cors())
       .use(bodyParser())
       .use(this.router.routes())
       .use(this.router.allowedMethods())
       .use(async ctx => {
+        ctx.status = 200;
         const token = parseToken(ctx.request.path);
         const initData = token
           ? await this.db.getInitUserDataForWebApp(token)
           : null;
-        ctx.status = initData ? 200 : 404;
-        ctx.req.initData = { ...initData };
+        ctx.req.initData = initData ? { ...initData } : null;
         return new Promise((resolve, reject) => {
           ctx.res.on("close", resolve);
           ctx.res.on("finish", resolve);

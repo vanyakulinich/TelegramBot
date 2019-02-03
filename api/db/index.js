@@ -130,11 +130,7 @@ export default class Database {
               checkLinkLifeTime(users[id].webConnect) &&
               users[id].webConnect.publicToken === urlToken
           );
-          if (!matchedId) {
-            this.db.ref(path.user(matchedId)).update({ webConnect: null });
-            return false;
-          }
-          return matchedId && webDataFactory(users[matchedId]);
+          return matchedId ? webDataFactory(users[matchedId]) : false;
         },
         err => false
       );

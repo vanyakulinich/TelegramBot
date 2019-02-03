@@ -23,6 +23,8 @@
   "author": "Ivan Kulinich",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "2",
+    "@nuxtjs/axios": "^5.3.6",
     "axios": "^0.18.0",
     "cross-env": "^5.1.1",
     "firebase": "^5.7.3",
