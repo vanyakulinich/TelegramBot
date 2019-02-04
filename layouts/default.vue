@@ -16,28 +16,34 @@
         <v-layout align-center justify-center>
           <v-flex xs10>
             <v-card-title class="menu_title">Menu</v-card-title>
-            <div class="close_icon" @click.stop="primaryDrawer.model = !primaryDrawer.model">
+            <div class="close_icon" @click.stop="toggleMenu">
               <v-icon x-large>mdi-close</v-icon>
             </div>
             <v-card class="menu_items_wrap">
               <v-card-title class="menu_item_subtitle">Reminder Manager</v-card-title>
               <v-card-text class="menu_link_wrap">
-                <nuxt-link :to="`/app/${token}/reminder_manager/all`" class="menu_link">My Reminders</nuxt-link>
+                <MenuLink
+                  :path="`/app/${token}/reminder_manager`"
+                  :clickCB="toggleMenu"
+                  :title="'My Reminders'"
+                />
               </v-card-text>
               <v-card-text class="menu_link_wrap">
-                <nuxt-link
-                  :to="`/app/${token}/reminder_manager/new`"
-                  class="menu_link"
-                >Add New Reminder</nuxt-link>
+                <MenuLink
+                  :path="`/app/${token}/reminder_manager/new`"
+                  :clickCB="toggleMenu"
+                  :title="'Add New Reminder'"
+                />
               </v-card-text>
             </v-card>
             <v-card class="menu_items_wrap">
               <v-card-title class="menu_item_subtitle">Personal Info</v-card-title>
               <v-card-text class="menu_link_wrap">
-                <nuxt-link
-                  :to="`/app/${token}/personal_info`"
-                  class="menu_link"
-                >Manage Personal Info</nuxt-link>
+                <MenuLink
+                  :path="`/app/${token}/personal_info`"
+                  :clickCB="toggleMenu"
+                  :title="'Manage Personal Info'"
+                />
               </v-card-text>
             </v-card>
           </v-flex>
@@ -46,10 +52,7 @@
     </v-navigation-drawer>
     <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
       <div v-if="!error">
-        <v-toolbar-side-icon
-          v-if="primaryDrawer.type !== 'permanent'"
-          @click.stop="primaryDrawer.model = !primaryDrawer.model"
-        ></v-toolbar-side-icon>
+        <v-toolbar-side-icon v-if="primaryDrawer.type !== 'permanent'" @click.stop="toggleMenu"></v-toolbar-side-icon>
       </div>
       <v-toolbar-title>
         <span class="toolbar_title">Reminder Manager</span>
@@ -74,7 +77,11 @@
 <script>
 import { mapGetters } from "vuex";
 import { closeConnectionHttp } from "../utils/httpUtils";
+import MenuLink from "../components/links/MenuLink.vue";
 export default {
+  components: {
+    MenuLink
+  },
   data: () => ({
     dark: true,
     drawers: ["Default (no property)", "Permanent", "Temporary"],
@@ -102,6 +109,9 @@ export default {
   methods: {
     handleCloseWindow() {
       closeConnectionHttp(this.tokens);
+    },
+    toggleMenu() {
+      this.primaryDrawer.model = !this.primaryDrawer.model;
     }
   }
 };

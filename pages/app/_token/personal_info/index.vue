@@ -29,7 +29,7 @@
               :selected="selected"
             />
           </div>
-          <v-btn color="blue-grey lighten-3" @click="deleteSelected">Delete</v-btn>
+          <Button :clickCB="deleteSelected" title="'Delete'" btnColor="red accent-1"/>
         </div>
       </div>
     </div>
@@ -44,10 +44,12 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import PersonalInfoModal from "../../../../components/modals/PersonalInfoModal.vue";
+import Button from "../../../../components/buttons/Button.vue";
 export default {
   name: "personal",
   components: {
-    PersonalInfoModal
+    PersonalInfoModal,
+    Button
   },
   data() {
     return {

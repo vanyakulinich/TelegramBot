@@ -8,28 +8,21 @@
         </v-card-title>
         <v-card-text>
           <v-flex xs12 sm6 md3>
-            <v-text-field
+            <Input
               :disabled="!!selected"
               label="field name"
-              color="grey lighten-1"
-              @input="changeField"
+              :inputCB="changeField"
               :value="selected ? selected.name : name"
-            ></v-text-field>
+            />
           </v-flex>
-
           <v-flex xs12 sm6 md3>
-            <v-text-field
-              label="info"
-              color="grey lighten-1"
-              @input="changeInfo"
-              :value="selected ? selected.value : value"
-            ></v-text-field>
+            <Input label="info" :inputCB="changeInfo" :value="selected ? selected.value : value"/>
           </v-flex>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-grey lighten-3" flat @click="closeDialog">cancel</v-btn>
-          <v-btn color="blue-grey lighten-3" flat @click="addNewInfo">{{selected ? "save" : "add"}}</v-btn>
+          <Button :clickCB="closeDialog" title="cancel"/>
+          <Button :clickCB="addNewInfo" :title="selected ? 'save' : 'add'"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -38,7 +31,13 @@
 
 <script>
 import { mapActions } from "vuex";
+import Input from "../inputs/Input.vue";
+import Button from "../buttons/Button.vue";
 export default {
+  components: {
+    Input,
+    Button
+  },
   name: "personalInfoModal",
   data() {
     return {
