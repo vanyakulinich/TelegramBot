@@ -72,6 +72,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { closeConnectionHttp } from "../utils/httpUtils";
 export default {
   data: () => ({
     dark: true,
@@ -91,6 +93,15 @@ export default {
     },
     error() {
       return this.$nuxt.nuxt.err;
+    },
+    ...mapGetters({ tokens: "tokens" })
+  },
+  mounted() {
+    window.addEventListener("unload", this.handleCloseWindow, false);
+  },
+  methods: {
+    handleCloseWindow() {
+      closeConnectionHttp(this.tokens);
     }
   }
 };

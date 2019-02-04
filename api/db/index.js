@@ -214,10 +214,10 @@ export default class Database {
     return user ? tokens.publicToken : false;
   }
 
-  closeWebConnection({ tokens }) {
-    const validTokens = this._checkTokens(tokens);
-    if (!validTokens) return false;
-    const userWebConnect = this.db.ref(path.users(validTokens.id));
+  async closeWebConnection({ tokens }) {
+    const userId = await this._checkTokens(tokens);
+    if (!userId) return false;
+    const userWebConnect = await this.db.ref(path.user(userId));
     userWebConnect.update({ webConnect: null }, err => false);
     return true;
   }

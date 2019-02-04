@@ -1,5 +1,9 @@
 import Router from "koa-router";
-import { apiMethods, apiEndpoints } from "../config/api";
+import {
+  apiMethods,
+  apiEndpoints,
+  closeConnectionEndpoint
+} from "../config/api";
 
 export class ApiRouter {
   constructor(db) {
@@ -44,9 +48,9 @@ export class ApiRouter {
       ctx.status = 200;
       ctx.body = await this.db.getUser(565484466);
     });
-    this.router.post("/", async ctx => {
-      ctx.status = 200;
-      console.log("END");
+    // close web connection endpoint
+    this.router.put(closeConnectionEndpoint, async ctx => {
+      this.db.closeWebConnection({ tokens: ctx.request.body });
     });
   }
 }
