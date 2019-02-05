@@ -8,7 +8,7 @@ export const path = {
   web: id => `/users/${id}/webConnect`
 };
 
-export const newUserFactory = ({ id, first_name, last_name }) => ({
+export const createNewUser = ({ id, first_name, last_name }) => ({
   [id]: {
     personal: {
       firstName: first_name || "",
@@ -19,7 +19,7 @@ export const newUserFactory = ({ id, first_name, last_name }) => ({
   }
 });
 
-export const webConnectFactory = ({ id, publicToken, privateToken }) => ({
+export const createNewWebConnect = ({ id, publicToken, privateToken }) => ({
   id,
   publicToken,
   privateToken,
@@ -27,7 +27,7 @@ export const webConnectFactory = ({ id, publicToken, privateToken }) => ({
   linkLifeTime: 60000 // if user doesn't visit link for 1 min, it will expire
 });
 
-export const webDataFactory = user => {
+export const createUserWebData = user => {
   const { personal, reminders, webConnect } = user;
   const { publicToken, privateToken, id } = webConnect;
   return {

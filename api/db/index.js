@@ -1,9 +1,9 @@
 import { firebase, ID_DECODER } from "../../config/db";
 import {
   path,
-  newUserFactory,
-  webConnectFactory,
-  webDataFactory,
+  createNewUser,
+  createNewWebConnect,
+  createUserWebData,
   checkLinkLifeTime
 } from "../../utils/dbUtils";
 import { capitalizeStringFirstLetter } from "../../helpers/generalHelpers";
@@ -136,7 +136,7 @@ export default class Database {
     return users.once("value").then(
       data => {
         !data.child(userData.id).exists() &&
-          users.update(newUserFactory(userData));
+          users.update(createNewUser(userData));
         return true;
       },
       err => false
@@ -208,7 +208,7 @@ export default class Database {
   // web connection
   async setUpWebConnection({ tokens, id }) {
     tokens.id = id ^ ID_DECODER;
-    const webConnect = webConnectFactory(tokens);
+    const webConnect = createNewWebConnect(tokens);
     const user = await this.db.ref(path.user(id));
     user.update({ webConnect }, err => false);
     return user ? tokens.publicToken : false;
@@ -237,7 +237,7 @@ export default class Database {
               checkLinkLifeTime(users[id].webConnect) &&
               users[id].webConnect.publicToken === urlToken
           );
-          return matchedId ? webDataFactory(users[matchedId]) : false;
+          return matchedId ? createUserWebData(users[matchedId]) : false;
         },
         err => false
       );

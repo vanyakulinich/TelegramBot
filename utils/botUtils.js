@@ -1,4 +1,4 @@
-import { createUTCDate, createMSDate } from "./timeUtils";
+import { createISODate, createMSDate } from "./timeUtils";
 
 export function* watcherGenerator(bot) {
   while (true) {
@@ -14,14 +14,14 @@ export function* watcherGenerator(bot) {
   }
 }
 
-export const newReminderFactory = match => {
-  const dateUTC = createUTCDate(match[2], match[3]);
-  const dateMs = createMSDate(dateUTC);
+export const createNewReminder = match => {
+  const dateISO = createISODate(match[2], match[3]);
+  const dateMs = createMSDate(dateISO);
   return {
     text: match[1],
     date: match[2],
     time: match[3],
-    dateUTC,
+    dateISO,
     dateMs,
     expired: false
   };

@@ -1,7 +1,6 @@
 <template>
   <div v-if="personal" @click="eraseSelected">
-    <div class="title_personal">Personal Info</div>
-
+    <ContentHeader text="Personal Info"/>
     <div class="names">
       <span class="field_title">name:</span>
       {{personal.firstName}} {{personal.lastName}}
@@ -45,11 +44,13 @@
 import { mapGetters, mapActions } from "vuex";
 import PersonalInfoModal from "../../../../components/modals/PersonalInfoModal.vue";
 import Button from "../../../../components/buttons/Button.vue";
+import ContentHeader from "../../../../components/headers/ContentHeader.vue";
 export default {
   name: "personal",
   components: {
     PersonalInfoModal,
-    Button
+    Button,
+    ContentHeader
   },
   data() {
     return {
@@ -81,13 +82,6 @@ export default {
 </script>
 
 <style scoped>
-.title_personal {
-  font-family: "Indie Flower", cursive;
-  opacity: 0.5;
-  font-size: 34px;
-  text-decoration: underline;
-  text-align: right;
-}
 .names {
   font-size: 27px;
 }

@@ -34,7 +34,7 @@ export const validCurrentTime = ({ hours, mins, day, month }) => {
   return true;
 };
 
-export const createUTCDate = (date, time) => {
+export const createISODate = (date, time) => {
   const dateVals = date.split(".").reverse();
   dateVals[1] -= 1;
   const timeVals = time.split(":");

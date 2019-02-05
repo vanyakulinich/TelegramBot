@@ -9,7 +9,7 @@ import {
 } from "../../helpers/botHelpers";
 import { validDate } from "../../utils/dateUtils";
 import { validTime } from "../../utils/timeUtils";
-import { watcherGenerator, newReminderFactory } from "../../utils/botUtils";
+import { watcherGenerator, createNewReminder } from "../../utils/botUtils";
 
 Promise.config({
   cancellation: true
@@ -66,7 +66,7 @@ export default class Bot {
         this.bot.sendMessage(msg.chat.id, isValid.msg);
         return;
       }
-      const newReminder = newReminderFactory(match);
+      const newReminder = createNewReminder(match);
       const dbResponse = await this.db.manageReminder(msg.chat.id, newReminder);
       this._watchReminders(msg.chat.id, newReminder.dateMs);
       this.bot.sendMessage(

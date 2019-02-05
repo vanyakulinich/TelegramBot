@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "input",
+  name: "custom_input",
   props: {
     disabled: {
       type: Boolean,

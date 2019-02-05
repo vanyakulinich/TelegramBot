@@ -1,10 +1,10 @@
 <template>
-  <v-btn :color="btnColor" flat @click="clickCB">{{title}}</v-btn>
+  <v-btn :color="btnColor" @click="clickCB">{{title}}</v-btn>
 </template>
 
 <script>
 export default {
-  name: "button",
+  name: "custom_button",
   props: {
     btnColor: {
       type: String,
