@@ -37,3 +37,12 @@ export const checkDaysInMonth = (month, year) => {
 };
 
 export const isLeapYear = year => year % 4 === 0;
+
+export const createMSDate = date => Date.parse(date);
+
+export const createISODate = (date, time) => {
+  const dateVals = date.split(".").reverse();
+  dateVals[1] -= 1;
+  const timeVals = time.split(":");
+  return new Date(...dateVals, ...timeVals);
+};

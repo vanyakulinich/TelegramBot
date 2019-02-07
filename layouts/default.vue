@@ -14,7 +14,7 @@
     >
       <v-container fluid class="menu">
         <v-layout align-center justify-center>
-          <v-flex xs10>
+          <v-flex>
             <v-card-title class="menu_title">Menu</v-card-title>
             <div class="close_icon" @click.stop="toggleMenu">
               <v-icon x-large>mdi-close</v-icon>
@@ -161,6 +161,11 @@ export default {
   top: 15px;
   right: 8px;
   cursor: pointer;
+}
+@media (max-width: 370px) {
+  .toolbar_title {
+    font-size: 25px;
+  }
 }
 </style>
 

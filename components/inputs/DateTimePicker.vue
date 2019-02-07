@@ -13,6 +13,10 @@
 </template>
 
 <script>
+import {
+  createTodayISODate,
+  getCurrentTimeZone
+} from "../../utils/ISOStringsUtils";
 export default {
   name: "date_time_picker",
   props: {
@@ -22,7 +26,7 @@ export default {
     },
     minDate: {
       type: String,
-      default: `${new Date().toISOString()}`
+      default: `${createTodayISODate()}`
     },
     changeDate: {
       type: Function,
@@ -30,13 +34,13 @@ export default {
     },
     startDate: {
       type: String,
-      default: `${new Date().toISOString()}`
+      default: `${createTodayISODate()}`
     }
   },
   data() {
     return {
       datetime: this.startDate,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      timeZone: getCurrentTimeZone()
     };
   }
 };
@@ -46,7 +50,7 @@ export default {
 .picker {
   height: 40px;
   background: rgba(126, 125, 125, 0.5);
-  width: 250px;
+  width: 100%;
   font-size: 20px;
   box-shadow: 0px 0px 34px 7px rgba(126, 125, 125, 0.75);
   font-size: 20px;

@@ -1,23 +1,22 @@
 <template>
   <v-layout>
-    <v-flex>
+    <v-flex align-center justify-center>
       <ContentHeader text="Add New Reminder"/>
-      <v-card class="card">
-        <div>
-          <Input label="Reminder Text" :inputCB="reminderText"/>
-          <div>
-            <NewReminderHeader title="Pick Up Date"/>
-            <DateTimePicker :changeDate="changeDate" :minDate="minDate" datepickerType="date"/>
-          </div>
-          <div>
-            <NewReminderHeader title="Pick Up Time"/>
-            <DateTimePicker datepickerType="time" :changeDate="changeTime" :startDate="startTime"/>
-          </div>
+      <div>
+        <NewReminderHeader title="Enter Your Reminder"/>
+        <Input label="Reminder Text" :inputCB="reminderText"/>
+        <div class="pickers">
+          <NewReminderHeader title="Pick Up Date"/>
+          <DateTimePicker :changeDate="changeDate" :minDate="minDate" datepickerType="date"/>
         </div>
-        <v-card-actions class="form_buttons">
-          <Button title="Add" btnColor="blue accent-1" :clickCB="addNewReminder"/>
-        </v-card-actions>
-      </v-card>
+        <div class="pickers">
+          <NewReminderHeader title="Pick Up Time"/>
+          <DateTimePicker datepickerType="time" :changeDate="changeTime" :startDate="startTime"/>
+        </div>
+      </div>
+      <v-card-actions class="form_buttons">
+        <Button title="Add" btnColor="blue accent-1" :clickCB="addNewReminder"/>
+      </v-card-actions>
     </v-flex>
   </v-layout>
 </template>
@@ -28,6 +27,8 @@ import ContentHeader from "../../../../components/headers/ContentHeader.vue";
 import Input from "../../../../components/inputs/Input.vue";
 import DateTimePicker from "../../../../components/inputs/DateTimePicker.vue";
 import NewReminderHeader from "../../../../components/headers/NewReminderHeader";
+import { createTodayISODateWithOffset } from "../../../../utils/ISOStringsUtils";
+import { createNewReminderFromInputs } from "../../../../utils/reminderUtils";
 export default {
   name: "add_new_reminder",
   components: {
@@ -40,8 +41,8 @@ export default {
   data() {
     return {
       text: "",
-      minDate: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(), // plus 2h due to UTC format to disable previous day
-      startTime: new Date(Date.now() + 1000 * 60 * 5).toISOString(), // default time is +5min to current time
+      minDate: createTodayISODateWithOffset(1000 * 60 * 60 * 2), // plus 2h due to UTC format to disable previous day
+      startTime: createTodayISODateWithOffset(1000 * 60 * 5), // default time is +5min to current time
       selectedDate: null,
       selectedTime: null
     };
@@ -59,23 +60,28 @@ export default {
       this.selectedTime = val;
     },
     addNewReminder() {
+      const newReminderData = createNewReminderFromInputs({
+        text: this.text,
+        date: this.selectedDate,
+        time: this.selectedTime
+      });
       // TODO: implement action
-      // split date and time strings and form new string, then use new Date
-      console.log(this);
+      console.log(newReminderData);
     }
   }
 };
 </script>
 
 <style>
-.form-buttons {
+.form_buttons {
   display: flex;
   justify-content: flex-end;
+  margin: 30px 0;
+  padding-right: 20px;
+  width: 100%;
 }
-.card {
-  display: flex;
-  flex-direction: column;
-  max-width: 400px;
+.pickers {
+  margin-bottom: 40px;
 }
 </style>
 

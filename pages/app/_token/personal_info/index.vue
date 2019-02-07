@@ -117,4 +117,15 @@ export default {
 .active_item {
   text-shadow: 0px 0px 20px #d3dfff;
 }
+@media (max-width: 370px) {
+  .names {
+    font-size: 21px;
+  }
+  .field_title {
+    font-size: 17px;
+  }
+  .extra_item {
+    font-size: 18px;
+  }
+}
 </style>

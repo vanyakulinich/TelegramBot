@@ -22,5 +22,10 @@ export default {
   text-decoration: underline;
   text-align: right;
 }
+@media (max-width: 370px) {
+  .header {
+    font-size: 25px;
+  }
+}
 </style>
 
