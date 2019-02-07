@@ -34,10 +34,13 @@
     "koa-mount": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "luxon": "^1.11.1",
     "node-telegram-bot-api": "^0.30.0",
     "nuxt": "^2.3.4",
     "uuid-token-generator": "^1.0.0",
-    "vuetify": "^1.4.2"
+    "vue-datetime": "^1.0.0-beta.10",
+    "vuetify": "^1.4.2",
+    "weekstart": "^1.0.0"
   },
   "devDependencies": {
     "@mdi/font": "^3.3.92",

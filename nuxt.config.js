@@ -19,7 +19,7 @@ module.exports = {
       }
     ]
   },
-  plugins: ["~plugins/vuetify.js"],
+  plugins: ["~plugins/vuetify.js", "~plugins/vueDatetime.js"],
   modules: [["@nuxtjs/axios", { baseURL }]],
   /*
    ** Customize the progress bar color
