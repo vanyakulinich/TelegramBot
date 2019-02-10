@@ -2,7 +2,7 @@
   <div>
     <datetime
       :type="datepickerType"
-      input-class="picker"
+      :input-class="disabled ? 'picker disabled' : 'picker'"
       v-model="datetime"
       @input="changeDate"
       :min-datetime="minDate"
@@ -35,6 +35,10 @@ export default {
     startDate: {
       type: String,
       default: `${createTodayISODate()}`
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -72,6 +76,11 @@ export default {
   font-weight: 500;
   font-size: 25px;
   color: #444;
+}
+.disabled {
+  pointer-events: none;
+  box-shadow: none;
+  background: none;
 }
 </style>
 

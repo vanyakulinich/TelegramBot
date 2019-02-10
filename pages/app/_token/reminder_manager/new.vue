@@ -29,6 +29,8 @@ import DateTimePicker from "../../../../components/inputs/DateTimePicker.vue";
 import NewReminderHeader from "../../../../components/headers/NewReminderHeader";
 import { createTodayISODateWithOffset } from "../../../../utils/ISOStringsUtils";
 import { createNewReminderFromInputs } from "../../../../utils/reminderUtils";
+import { manageReminderMethods } from "../../../../mixins/manageReminderMethods";
+
 export default {
   name: "add_new_reminder",
   components: {
@@ -38,6 +40,7 @@ export default {
     DateTimePicker,
     NewReminderHeader
   },
+  mixins: [manageReminderMethods],
   data() {
     return {
       text: "",
@@ -48,17 +51,6 @@ export default {
     };
   },
   methods: {
-    reminderText(value) {
-      this.text = value;
-    },
-    changeDate(val) {
-      console.log(val);
-      this.selectedDate = val;
-    },
-    changeTime(val) {
-      console.log(val);
-      this.selectedTime = val;
-    },
     addNewReminder() {
       const newReminderData = createNewReminderFromInputs({
         text: this.text,
@@ -82,6 +74,7 @@ export default {
 }
 .pickers {
   margin-bottom: 40px;
+  max-width: 300px;
 }
 </style>
 

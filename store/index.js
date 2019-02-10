@@ -36,7 +36,8 @@ const store = () =>
             dateMs: 1549785600000,
             dateISO: "2019-02-10T08:00:00.000Z",
             expired: false,
-            text: "test2",
+            text:
+              "test2asddddddddasdafadfadsfs  asdddddddddddddddddddddddddddas asdasdqnjk us knandoqw qwiud c uq dkqdqwdq  qwdqweqwd qdnqowd",
             time: "10:00"
           }
         }
