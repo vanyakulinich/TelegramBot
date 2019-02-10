@@ -1,7 +1,7 @@
 <template>
   <div>
     <ContentHeader text="My Reminders"/>
-    <div>
+    <div v-if="reminders">
       <v-divider class="header_divider"></v-divider>
       <template v-for="(item, itemKey) in reminders">
         <div :key="itemKey" class="item">
@@ -14,13 +14,14 @@
             <div class="item_text">{{ item.text }}</div>
           </div>
           <div class="icon">
-            <ReminderModal :reminder="item"/>
+            <ReminderModal :reminder="item" :reminderId="itemKey"/>
           </div>
 
           <v-divider></v-divider>
         </div>
       </template>
     </div>
+    <div v-else>No reminders</div>
   </div>
 </template>
 

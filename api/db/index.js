@@ -34,28 +34,41 @@ export default class Database {
     const reminders = await this.db.ref(path.reminders(id));
     return reminders.once("value").then(
       data => {
-        const existingReminders = data.val();
-        const manageReminder = () => {
-          if (!reminder.dateMs)
-            return {
-              [existingReminders[reminder.DateMs]]: null
+        let existingReminders = data.val();
+        //
+        const manageReminderData = () => {
+          let allReminders =
+            existingReminders === "empty" ? {} : { ...existingReminders };
+          if (reminder.deleted) {
+            delete allReminders[reminder.id];
+            if (!Object.keys(allReminders).length) {
+              allReminders = "empty";
+            }
+            return allReminders;
+          }
+          if (reminder.edited) {
+            allReminders[reminder.id] = {
+              ...reminder.editedReminder
             };
-          return existingReminders[reminder.dateMs]
-            ? {
-                [existingReminders[reminder.dateMs]]: { ...reminder }
-              }
-            : {
-                [reminder.dateMs]: { ...reminder }
-              };
+            return allReminders;
+          }
+          if (!Object.keys(allReminders).length) {
+            return {
+              [reminder.dateMs]: { ...reminder }
+            };
+          }
+          return {
+            ...allReminders,
+            [reminder.dateMs]: { ...reminder }
+          };
         };
-        const newReminder = manageReminder();
-        const newData =
-          !existingReminders || existingReminders === "empty"
-            ? newReminder
-            : { ...existingReminders, ...newReminder };
-        reminders.update(newData);
+
+        const newReminders = manageReminderData();
+        const user = this.db.ref(path.user(id));
+        user.update({ reminders: newReminders });
+        console.log("DATA TO DB", newReminders);
         this._toggleClosestReminder(id, reminder.dateMs);
-        return true;
+        return typeof newReminders === "string" ? null : newReminders;
       },
       err => false
     );

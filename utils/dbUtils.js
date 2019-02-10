@@ -32,7 +32,7 @@ export const createUserWebData = user => {
   const { publicToken, privateToken, id } = webConnect;
   return {
     personal,
-    reminders,
+    reminders: reminders === "empty" ? null : reminders,
     tokens: {
       publicToken,
       privateToken,

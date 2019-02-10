@@ -5,5 +5,8 @@ export const mutations = {
     state.data.personal = {
       ...payload
     };
-  }
+  },
+  [types.REMINDERS]: (state, payload) =>
+    (state.data.reminders =
+      typeof payload === "object" ? { ...payload } : payload)
 };

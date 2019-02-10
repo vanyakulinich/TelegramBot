@@ -1,5 +1,4 @@
 export const combineDateAndTimeISOStrings = (date, time) => {
-  console.log("DATE TIME: ", date, time);
   const parsedDate = date.split("T")[0];
   const parsedTime = time.split("T")[1];
   return `${parsedDate}T${parsedTime}`;

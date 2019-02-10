@@ -30,6 +30,7 @@ import NewReminderHeader from "../../../../components/headers/NewReminderHeader"
 import { createTodayISODateWithOffset } from "../../../../utils/ISOStringsUtils";
 import { createNewReminderFromInputs } from "../../../../utils/reminderUtils";
 import { manageReminderMethods } from "../../../../mixins/manageReminderMethods";
+import { mapActions } from "vuex";
 
 export default {
   name: "add_new_reminder",
@@ -57,9 +58,12 @@ export default {
         date: this.selectedDate,
         time: this.selectedTime
       });
-      // TODO: implement action
-      console.log(newReminderData);
-    }
+      this.createReminder(newReminderData);
+      this.$router.push({
+        path: `/app/${this.$route.params.token}/reminder_manager`
+      });
+    },
+    ...mapActions(["createReminder"])
   }
 };
 </script>

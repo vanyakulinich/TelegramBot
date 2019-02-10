@@ -1,5 +1,5 @@
 import { createISODate } from "./dateUtils";
-import { createNewReminder } from "./reminderUtils";
+import { createNewReminder as newReminder } from "./reminderUtils";
 
 export function* watcherGenerator(bot) {
   while (true) {
@@ -17,7 +17,7 @@ export function* watcherGenerator(bot) {
 
 export const createNewReminder = match => {
   const dateISO = createISODate(match[2], match[3]);
-  return createNewReminder({
+  return newReminder({
     text: match[1],
     date: match[2],
     time: match[3],

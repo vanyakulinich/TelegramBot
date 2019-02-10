@@ -16,11 +16,12 @@ export class ApiRouter {
   _createRoute({ endpoint, method }) {
     this.router[method](`/${endpoint}`, async ctx => {
       ctx.status = 200;
-      const { body } = ctx.request;
+      const { body, params } = ctx.request;
       const response = await this.db.manageDataFromWebRequest({
         ...body,
         type: endpoint
       });
+      console.log(response);
       ctx.body = response;
     });
   }
@@ -43,11 +44,6 @@ export class ApiRouter {
     Object.keys(apiEndpoints).forEach(endpoint =>
       this._createEndpointRoutes(endpoint)
     );
-    // test route
-    this.router.get("/", async ctx => {
-      ctx.status = 200;
-      ctx.body = await this.db.getUser(565484466);
-    });
     // close web connection endpoint
     this.router.put(closeConnectionEndpoint, async ctx => {
       this.db.closeWebConnection({ tokens: ctx.request.body });

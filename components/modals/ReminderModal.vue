@@ -42,7 +42,7 @@
             v-if="reminder && !reminder.expired"
             btnColor="blue-grey lighten-3"
           />
-          <Button :clickCB="deleteReminder" title="Delete" btnColor="red accent-1"/>
+          <Button :clickCB="delReminder" title="Delete" btnColor="red accent-1"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import Input from "../inputs/Input.vue";
 import Button from "../buttons/Button.vue";
 import DateTimePicker from "../inputs/DateTimePicker.vue";
@@ -75,8 +76,8 @@ export default {
     closeModal() {
       this.dialog = false;
     },
-    deleteReminder() {
-      console.log("delete");
+    delReminder() {
+      this.updateReminder({id: this.reminderId, dateMs: this.reminder.dateMs, deleted: true});
       this.closeModal();
     },
     saveEdited() {
@@ -85,19 +86,25 @@ export default {
         date: this.selectedDate,
         time: this.selectedTime
       });
-      // TODO: implement action
-      console.log(editedReminder);
-    }
-  },
-  mounted() {
-    console.log(this.reminder);
+      this.updateReminder({
+        id: this.reminderId,
+        edited: true, 
+        editedReminder
+      });
+      this.closeModal();
+    },
+    ...mapActions(['deleteReminder', 'updateReminder'])
   },
   props: {
     reminder: {
       type: Object | null,
       default: null
+    },
+    reminderId: {
+       type: String,
+       default: ''
     }
-  }
+  },
 };
 </script>
 
