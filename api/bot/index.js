@@ -25,7 +25,7 @@ export default class Bot {
       userId: null,
       timeoutID: null
     };
-    this.watcher = watcherGenerator(this);
+    // this.watcher = watcherGenerator(this);
   }
 
   start() {
@@ -67,8 +67,12 @@ export default class Bot {
         return;
       }
       const newReminder = createNewReminder(match);
-      const dbResponse = await this.db.manageReminder(msg.chat.id, newReminder);
-      this._watchReminders(msg.chat.id, newReminder.dateMs);
+      const dbResponse = await this.db.manageReminder(
+        msg.chat.id,
+        newReminder,
+        "post"
+      );
+      // this.watchReminders(msg.chat.id, newReminder.dateMs);
       this.bot.sendMessage(
         msg.chat.id,
         dbResponse ? messages.successReminder(match) : messages.errorMsg
@@ -89,42 +93,45 @@ export default class Bot {
         );
     });
 
-    this.watcher.next();
-  }
-  // private methods
-  _watchReminders(newReminderId, newReminderTime) {
-    return !this.nextReminder.time && !this.nextReminder.userId
-      ? this.watcher.next({
-          id: newReminderId,
-          time: newReminderTime
-        })
-      : this._checkForClosestReminder(newReminderId, newReminderTime);
+    // this.watcher.next();
+    // this.db.setBotWatcher(this.watcher);
   }
 
-  async _activateClosestReminder(id, activateTime) {
-    const reminderData = await this.db.activateReminder(id, activateTime);
-    if (!reminderData) this.db._activateClosestReminder(id, activateTime);
-    const { text, date, time } = reminderData;
-    this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
-    this._findNextClosestReminder();
-  }
+  // watchReminders(newReminderId, newReminderTime) {
+  //   return !this.nextReminder.time && !this.nextReminder.userId
+  //     ? this.watcher.next({
+  //         id: newReminderId,
+  //         time: newReminderTime
+  //       })
+  //     : this._checkForClosestReminder(newReminderId, newReminderTime);
+  // }
 
-  async _findNextClosestReminder() {
-    const closestReminder = await this.db.findClosestReminderInUsers();
-    if (!closestReminder.time || !closestReminder.id) {
-      Object.keys(this.nextReminder).forEach(item => {
-        this.nextReminder[item] = null;
-      });
-      return;
-    }
-    this.watcher.next({ ...closestReminder });
-  }
+  // // private methods
+  // async _activateClosestReminder(id, activateTime) {
+  //   const reminderData = await this.db.activateReminder(id, activateTime);
+  //   if (!reminderData) this.db._activateClosestReminder(id, activateTime);
+  //   // console.log(reminderData);
+  //   const { text, date, time } = reminderData;
+  //   this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
+  //   this._findNextClosestReminder();
+  // }
 
-  _checkForClosestReminder(newId, newTime) {
-    if (newTime < this.nextReminder.time) {
-      this.watcher.next({ id: newId, time: newTime });
-    }
-  }
+  // async _findNextClosestReminder() {
+  //   const closestReminder = await this.db.findClosestReminderInUsers();
+  //   if (!closestReminder.time || !closestReminder.id) {
+  //     Object.keys(this.nextReminder).forEach(item => {
+  //       this.nextReminder[item] = null;
+  //     });
+  //     return;
+  //   }
+  //   this.watcher.next({ ...closestReminder });
+  // }
+
+  // _checkForClosestReminder(newId, newTime) {
+  //   if (newTime < this.nextReminder.time) {
+  //     this.watcher.next({ id: newId, time: newTime });
+  //   }
+  // }
   // webapp
   async _setWebAppConnection(id) {
     const tokens = {

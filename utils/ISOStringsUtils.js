@@ -1,7 +1,7 @@
 export const combineDateAndTimeISOStrings = (date, time) => {
   const parsedDate = date.split("T")[0];
   const parsedTime = time.split("T")[1];
-  return `${parsedDate}T${parsedTime}`;
+  return new Date(`${parsedDate}T${parsedTime}`);
 };
 
 export const createTodayISODate = () => new Date().toISOString();
@@ -21,8 +21,8 @@ export const beautifyTimeFromISOString = time => {
 
 export const beautifyDateFromISOString = date => {
   const parsedDate = new Date(date).toLocaleDateString().split("/");
-  const days = checkTimeValue(parsedDate[0]);
-  const month = checkTimeValue(parsedDate[1]);
+  const month = checkTimeValue(parsedDate[0]);
+  const days = checkTimeValue(parsedDate[1]);
   return `${days}.${month}.${parsedDate[2]}`;
 };
 

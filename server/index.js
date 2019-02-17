@@ -17,7 +17,6 @@ export default class Server {
   start() {
     nuxtConfig.dev = !(this.server.dev === "production");
     const { port = process.env.PORT || 3000 } = this.nuxt.options.server;
-
     if (nuxtConfig.dev) new Builder(this.nuxt).build();
     this.server
       .use(cors())

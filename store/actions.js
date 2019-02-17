@@ -18,6 +18,7 @@ export const actions = {
       commit(types.DATA, initData);
     }
   },
+  // TODO: refactor personal
   async setPersonalInfo({ commit, state }, data) {
     const tokens = await getTokens(state);
     const response = await this.$axios.$post(`/${apiEndpoints.personal}`, {
@@ -26,20 +27,18 @@ export const actions = {
     });
     commit(types.PERSONAL_INFO, response);
   },
-  async createReminder({ commit, state }, data) {
+  async manageReminder({ commit, state }, data) {
     const tokens = await getTokens(state);
-    const response = await this.$axios.$post(`/${apiEndpoints.reminder}`, {
-      tokens,
-      data
-    });
-    commit(types.REMINDERS, response);
-  },
-  async updateReminder({ commit, state }, data) {
-    const tokens = await getTokens(state);
-    const response = await this.$axios.$put(`/${apiEndpoints.reminder}`, {
-      tokens,
-      data
-    });
+    const { type, reminder } = data;
+    const response = await this.$axios[`$${type}`](
+      `/${apiEndpoints.reminder}`,
+      {
+        data: {
+          tokens,
+          reminder
+        }
+      }
+    );
     commit(types.REMINDERS, response);
   }
 };

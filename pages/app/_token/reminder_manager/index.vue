@@ -14,7 +14,7 @@
             <div class="item_text">{{ item.text }}</div>
           </div>
           <div class="icon">
-            <ReminderModal :reminder="item" :reminderId="itemKey"/>
+            <ReminderModal :reminder="item"/>
           </div>
 
           <v-divider></v-divider>

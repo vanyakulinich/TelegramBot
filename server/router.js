@@ -16,12 +16,16 @@ export class ApiRouter {
   _createRoute({ endpoint, method }) {
     this.router[method](`/${endpoint}`, async ctx => {
       ctx.status = 200;
-      const { body, params } = ctx.request;
-      const response = await this.db.manageDataFromWebRequest({
-        ...body,
-        type: endpoint
-      });
-      console.log(response);
+      const { body } = ctx.request;
+      console.log("server body", body);
+      const { tokens, reminder } = method === "delete" ? body : body.data;
+      const dataToDB = {
+        tokens,
+        data: reminder,
+        type: endpoint,
+        method
+      };
+      const response = await this.db.manageDataFromWebRequest(dataToDB);
       ctx.body = response;
     });
   }

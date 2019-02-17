@@ -50,12 +50,15 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 import Input from "../inputs/Input.vue";
 import Button from "../buttons/Button.vue";
 import DateTimePicker from "../inputs/DateTimePicker.vue";
 import { manageReminderMethods } from "../../mixins/manageReminderMethods";
-import { createNewReminderFromInputs } from "../../utils/reminderUtils";
+import {
+  createNewReminderFromInputs,
+  updateReminder
+} from "../../utils/reminderUtils";
 export default {
   name: "reminder_modal",
   components: {
@@ -77,34 +80,30 @@ export default {
       this.dialog = false;
     },
     delReminder() {
-      this.updateReminder({id: this.reminderId, dateMs: this.reminder.dateMs, deleted: true});
+      this.manageReminder({ type: "delete", reminder: { ...this.reminder } });
       this.closeModal();
     },
     saveEdited() {
-      const editedReminder = createNewReminderFromInputs({
+      const editedReminder = updateReminder({
         text: this.text,
         date: this.selectedDate,
-        time: this.selectedTime
+        time: this.selectedTime,
+        id: this.reminder.id
       });
-      this.updateReminder({
-        id: this.reminderId,
-        edited: true, 
-        editedReminder
+      this.manageReminder({
+        type: "put",
+        reminder: { ...editedReminder }
       });
       this.closeModal();
     },
-    ...mapActions(['deleteReminder', 'updateReminder'])
+    ...mapActions(["manageReminder"])
   },
   props: {
     reminder: {
       type: Object | null,
       default: null
-    },
-    reminderId: {
-       type: String,
-       default: ''
     }
-  },
+  }
 };
 </script>
 
