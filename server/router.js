@@ -17,11 +17,10 @@ export class ApiRouter {
     this.router[method](`/${endpoint}`, async ctx => {
       ctx.status = 200;
       const { body } = ctx.request;
-      console.log("server body", body);
-      const { tokens, reminder } = method === "delete" ? body : body.data;
+      const { tokens, payload } = method === "delete" ? body : body.data;
       const dataToDB = {
         tokens,
-        data: reminder,
+        data: payload,
         type: endpoint,
         method
       };
@@ -48,8 +47,7 @@ export class ApiRouter {
     Object.keys(apiEndpoints).forEach(endpoint =>
       this._createEndpointRoutes(endpoint)
     );
-    // close web connection endpoint
-    this.router.put(closeConnectionEndpoint, async ctx => {
+    this.router.delete(closeConnectionEndpoint, ctx => {
       this.db.closeWebConnection({ tokens: ctx.request.body });
     });
   }

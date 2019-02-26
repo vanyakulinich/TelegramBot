@@ -1,7 +1,7 @@
 const types = {
   DATA: "DATA",
-  PERSONAL_INFO: "PERSONAL_INFO",
-  REMINDERS: "REMINDERS"
+  PERSONAL: "PERSONAL",
+  REMINDER: "REMINDER"
 };
 
 export default types;

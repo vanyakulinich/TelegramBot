@@ -10,7 +10,7 @@ export default class Server {
   constructor(database) {
     this.server = new Koa();
     this.nuxt = new Nuxt(nuxtConfig);
-    this.db = database.getDB();
+    this.db = database.DB;
     this.router = new ApiRouter(this.db).getRouter();
   }
 

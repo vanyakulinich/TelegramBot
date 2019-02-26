@@ -11,7 +11,42 @@ import { capitalizeStringFirstLetter } from "../../helpers/generalHelpers";
 export default class Database {
   constructor() {
     this.db = firebase.database();
+    this.watcher = this.watcherGenerator();
+    this.nextReminderToFire = {
+      timeout: null,
+      reminder: null
+    };
+    this.watcher.next();
   }
+
+  // db instance getter
+  get DB() {
+    return this;
+  }
+  // setter of bot reverse cb when reminder fires
+  set botCB(cb) {
+    this.botCB = cb;
+  }
+
+  // watcher of next reminder to fire
+  *watcherGenerator() {
+    const newReminderAppered = yield;
+    const users = this.db.ref(path(users));
+    users
+      .once("value")
+      .then(data => data.val())
+      .then(allUsers => {
+        const usersIds = Object.keys(allUsers);
+        usersIds.forEach(id => {
+          if (newReminderAppered < allUsers[id].nextReminder) {
+            // TODO
+            // provide timeout for future reminder
+            this.nextReminderToFire = newReminderAppered;
+          }
+        });
+      });
+  }
+
   // check web tokens
   async _checkTokens(tokens) {
     const userId = tokens.id ^ ID_DECODER;
@@ -33,7 +68,6 @@ export default class Database {
   _findUserClosestReminderDate(reminders) {
     let closestReminderDate = null;
     for (let reminder in reminders) {
-      // console.log("reminder", reminders[reminder]);
       const { expired, dateMs } = reminders[reminder];
       if (expired) continue;
       if (!closestReminderDate || dateMs < closestReminderDate) {
@@ -42,8 +76,8 @@ export default class Database {
     }
     return closestReminderDate;
   }
-  // reminder multifunction to manage reminders
-  async _remindersManager(id, reminder, type) {
+  // manager of reminders
+  async _reminderManager(id, reminder, type) {
     const user = await this.db.ref(path.user(id));
     return user
       .once("value")
@@ -64,22 +98,114 @@ export default class Database {
             reminders: isRemindersLength ? { ...updatedReminders } : "empty",
             nextReminder: closestReminder
           });
+          // TODO
+          // implement watcher here to update all reminders changes
           return isRemindersLength ? { ...updatedReminders } : null;
         },
         err => false
       );
   }
-  // reminders management
-  async manageReminder(id, reminder, type) {
-    const actionType = type === "put" || type === "post" ? "update" : type;
-    return this._remindersManager(id, reminder, actionType);
+
+  // set up expired reminder, when it has already fired
+  async _expireReminder(id, reminder) {
+    const user = await this.db.ref(path.user(id));
+    user
+      .once("value")
+      .then(data => data.val())
+      .then(userData => {
+        const { reminders } = userData;
+        reminders[reminder.id].expired = true;
+        const updatedReminders = {
+          ...reminders
+        };
+        userData.update({ reminders: updatedReminders });
+      });
   }
 
+  // manager of personal info
+  async _personalManager(id, personal, type) {
+    const personalData = await this.db.ref(path.personal(id));
+    personalData
+      .once("value")
+      .then(data => data.val())
+      .then(
+        personalInfo => {
+          const item = Object.entries(personal);
+          const extra = personalInfo.extra || {};
+          type === "update" &&
+            (extra[item[0][0]] = item[1][1])(type === "delete") &&
+            delete extra[item[0][0]];
+          const updatedPersonalData = {
+            ...personalInfo,
+            extra: {
+              ...extra
+            }
+          };
+          personalData.update(updatedPersonalData);
+          return updatedPersonalData;
+        },
+        err => false
+      );
+  }
+
+  // data handler factory
+  _dataHandler(id, data, method, type) {
+    const actionType =
+      method === "put" || method === "post" ? "update" : method;
+    return this[`_${type}Manager`](id, data, actionType);
+  }
+
+  // reciever of data from web app
   async manageDataFromWebRequest({ tokens, data, type, method }) {
     const userId = await this._checkTokens(tokens);
-    const dataType = capitalizeStringFirstLetter(type);
-    return userId ? this[`manage${dataType}`](userId, data, method) : false;
+    return userId ? this._dataHandler(userId, data, method, type) : false;
   }
+
+  // bot data handler
+  botDataHandler(id, data, method) {
+    return this._dataHandler(id, data, method, "reminder");
+  }
+
+  // new user creator
+  async startNewUser(userData) {
+    const users = await this.db.ref(path.users());
+    return users.once("value").then(
+      data => {
+        !data.child(userData.id).exists() &&
+          users.update(createNewUser(userData));
+        return true;
+      },
+      err => false
+    );
+  }
+
+  // async managePersonal(id, personal,) {
+  //   const personalData = await this.db.ref(path.personal(id));
+  //   return personalData.once("value").then(
+  //     data => {
+  //       const personalInfo = data.val();
+  //       const newPersonalInfo = () => {
+  //         const items = Object.entries(personal);
+  //         if (!personalInfo.extra) personalInfo.extra = {};
+  //         if (items[0][1]) {
+  //           personalInfo.extra[items[0][0]] = items[0][1];
+  //         } else {
+  //           delete personalInfo.extra[items[0][0]];
+  //         }
+  //         return {
+  //           ...personalInfo,
+  //           extra: {
+  //             ...personalInfo.extra
+  //           }
+  //         };
+  //       };
+  //       const updatedInfo = newPersonalInfo();
+  //       personalData.update(updatedInfo);
+  //       return updatedInfo;
+  //     },
+  //     err => false
+  //   );
+  // }
 
   // ----------------------------------------------------------------------
   // async _manageReminder(id, reminder) {
@@ -130,34 +256,6 @@ export default class Database {
   //   );
   // }
 
-  async managePersonal(id, personal) {
-    const personalData = await this.db.ref(path.personal(id));
-    return personalData.once("value").then(
-      data => {
-        const personalInfo = data.val();
-        const newPersonalInfo = () => {
-          const items = Object.entries(personal);
-          if (!personalInfo.extra) personalInfo.extra = {};
-          if (items[0][1]) {
-            personalInfo.extra[items[0][0]] = items[0][1];
-          } else {
-            delete personalInfo.extra[items[0][0]];
-          }
-          return {
-            ...personalInfo,
-            extra: {
-              ...personalInfo.extra
-            }
-          };
-        };
-        const updatedInfo = newPersonalInfo();
-        personalData.update(updatedInfo);
-        return updatedInfo;
-      },
-      err => false
-    );
-  }
-
   // _nextClosestReminder(id) {
   //   const reminders = this.db.ref(path.reminders(id));
   //   reminders
@@ -191,10 +289,6 @@ export default class Database {
   //     });
   // }
 
-  getDB() {
-    return this;
-  }
-
   // setBotWatcher(watcherCB) {
   //   this.botWatcher = watcherCB;
   // }
@@ -203,18 +297,6 @@ export default class Database {
   //   const user = await this.db.ref(path.user(id));
   //   return user.once("value").then(data => data.val(), err => false);
   // }
-
-  async startNewUser(userData) {
-    const users = await this.db.ref(path.users());
-    return users.once("value").then(
-      data => {
-        !data.child(userData.id).exists() &&
-          users.update(createNewUser(userData));
-        return true;
-      },
-      err => false
-    );
-  }
 
   // async activateReminder(id, reminderId) {
   //   const reminderPath = await this.db.ref(path.reminderId(id, reminderId));

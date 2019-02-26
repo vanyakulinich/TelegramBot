@@ -22,7 +22,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <Button :clickCB="closeDialog" title="cancel"/>
-          <Button :clickCB="addNewInfo" :title="selected ? 'save' : 'add'"/>
+          <Button :clickCB="handleInfo" :title="selected ? 'save' : 'add'"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -53,12 +53,17 @@ export default {
     changeInfo(value) {
       this.value = value;
     },
-    addNewInfo() {
+
+    handleInfo() {
       const name = this.selected ? this.selected.name : this.name;
       const payload = {
         [name]: this.value
       };
-      this.setPersonalInfo(payload);
+      this.manager({
+        method: this.selected ? "put" : "post",
+        target: "personal",
+        payload
+      });
       this.clear();
     },
     closeDialog() {
@@ -69,7 +74,7 @@ export default {
       this.info = "";
       this.dialog = false;
     },
-    ...mapActions(["setPersonalInfo"])
+    ...mapActions(["manager"])
   },
   props: {
     buttonText: {

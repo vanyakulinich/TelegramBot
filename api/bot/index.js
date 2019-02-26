@@ -19,12 +19,12 @@ export default class Bot {
   constructor(database) {
     this.bot = new TelegramBot(BOT_KEY, { polling: true });
     this.tokgen = new TokenGenerator();
-    this.db = database.getDB();
-    this.nextReminder = {
-      time: null,
-      userId: null,
-      timeoutID: null
-    };
+    this.db = database.DB;
+    // this.nextReminder = {
+    //   time: null,
+    //   userId: null,
+    //   timeoutID: null
+    // };
     // this.watcher = watcherGenerator(this);
   }
 
@@ -67,7 +67,7 @@ export default class Bot {
         return;
       }
       const newReminder = createNewReminder(match);
-      const dbResponse = await this.db.manageReminder(
+      const dbResponse = await this.db.botDataHandler(
         msg.chat.id,
         newReminder,
         "post"

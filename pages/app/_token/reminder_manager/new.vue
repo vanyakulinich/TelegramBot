@@ -53,19 +53,22 @@ export default {
   },
   methods: {
     addNewReminder() {
-      console.log(this.selectedDate);
       const newReminder = createNewReminderFromInputs({
         text: this.text,
         date: this.selectedDate,
         time: this.selectedTime
       });
       console.log(newReminder);
-      this.manageReminder({ type: "post", reminder: newReminder });
+      this.manager({
+        method: "post",
+        target: "reminder",
+        payload: newReminder
+      });
       this.$router.push({
         path: `/app/${this.$route.params.token}/reminder_manager`
       });
     },
-    ...mapActions(["manageReminder"])
+    ...mapActions(["manager"])
   }
 };
 </script>

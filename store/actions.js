@@ -18,27 +18,43 @@ export const actions = {
       commit(types.DATA, initData);
     }
   },
-  // TODO: refactor personal
-  async setPersonalInfo({ commit, state }, data) {
+  // // TODO: refactor personal
+  // async setPersonalInfo({ commit, state }, data) {
+  //   const tokens = await getTokens(state);
+  //   const response = await this.$axios.$post(`/${apiEndpoints.personal}`, {
+  //     tokens,
+  //     data
+  //   });
+  //   commit(types.PERSONAL, response);
+  // },
+
+  // async manageReminder({ commit, state }, data) {
+  //   const tokens = await getTokens(state);
+  //   const { type, reminder } = data;
+  //   const response = await this.$axios[`$${type}`](
+  //     `/${apiEndpoints.reminder}`,
+  //     {
+  //       data: {
+  //         tokens,
+  //         reminder
+  //       }
+  //     }
+  //   );
+  //   commit(types.REMINDER, response);
+  // },
+  // universal action
+  async manager({ commit, state }, data) {
     const tokens = await getTokens(state);
-    const response = await this.$axios.$post(`/${apiEndpoints.personal}`, {
-      tokens,
-      data
-    });
-    commit(types.PERSONAL_INFO, response);
-  },
-  async manageReminder({ commit, state }, data) {
-    const tokens = await getTokens(state);
-    const { type, reminder } = data;
-    const response = await this.$axios[`$${type}`](
-      `/${apiEndpoints.reminder}`,
+    const { method, target, payload } = data;
+    const response = await this.$axios[`$${method}`](
+      `/${apiEndpoints[target]}`,
       {
         data: {
           tokens,
-          reminder
+          payload
         }
       }
     );
-    commit(types.REMINDERS, response);
+    commit(types[target.toUpperCase()], response);
   }
 };

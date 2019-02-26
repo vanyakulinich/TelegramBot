@@ -80,7 +80,11 @@ export default {
       this.dialog = false;
     },
     delReminder() {
-      this.manageReminder({ type: "delete", reminder: { ...this.reminder } });
+      this.manager({
+        method: "delete",
+        target: "reminder",
+        payload: { ...this.reminder }
+      });
       this.closeModal();
     },
     saveEdited() {
@@ -90,13 +94,14 @@ export default {
         time: this.selectedTime,
         id: this.reminder.id
       });
-      this.manageReminder({
-        type: "put",
-        reminder: { ...editedReminder }
+      this.manager({
+        metthod: "put",
+        target: "reminder",
+        payload: { ...editedReminder }
       });
       this.closeModal();
     },
-    ...mapActions(["manageReminder"])
+    ...mapActions(["manager"])
   },
   props: {
     reminder: {

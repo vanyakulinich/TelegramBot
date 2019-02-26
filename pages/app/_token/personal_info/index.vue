@@ -66,14 +66,18 @@ export default {
       };
     },
     deleteSelected() {
-      this.setPersonalInfo({
-        [this.selected.name]: null
+      this.manager({
+        method: "delete",
+        target: "personal",
+        payload: {
+          [this.selected.name]: null
+        }
       });
     },
     eraseSelected() {
       if (this.selected) this.selected = null;
     },
-    ...mapActions(["setPersonalInfo"])
+    ...mapActions(["manager"])
   },
   computed: {
     ...mapGetters({ personal: "personalInfo" })
