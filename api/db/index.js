@@ -13,8 +13,9 @@ export default class Database {
     this.db = firebase.database();
     this.watcher = this.watcherGenerator();
     this.nextReminderToFire = {
-      timeout: null,
-      reminder: null
+      time: null,
+      userId: null,
+      timeoutID: null
     };
     this.watcher.next();
   }
@@ -25,26 +26,32 @@ export default class Database {
   }
   // setter of bot reverse cb when reminder fires
   set botCB(cb) {
-    this.botCB = cb;
+    this.cbToBot = cb;
   }
 
   // watcher of next reminder to fire
   *watcherGenerator() {
-    const newReminderAppered = yield;
-    const users = this.db.ref(path(users));
-    users
-      .once("value")
-      .then(data => data.val())
-      .then(allUsers => {
-        const usersIds = Object.keys(allUsers);
-        usersIds.forEach(id => {
-          if (newReminderAppered < allUsers[id].nextReminder) {
-            // TODO
-            // provide timeout for future reminder
-            this.nextReminderToFire = newReminderAppered;
-          }
+    while (true) {
+      yield;
+      const users = this.db.ref(path.users());
+      users
+        .once("value")
+        .then(data => data.val())
+        .then(allUsers => {
+          const usersIds = Object.keys(allUsers)
+            .filter(id => allUsers[id].nextReminder)
+            .sort((a, b) => a - b);
+          const reminderTime = allUsers[usersIds[0]].nextReminder;
+          this.nextReminderToFire.timeoutID &&
+            clearTimeout(this.nextReminderToFire.timeoutID);
+          this.nextReminderToFire.time = reminderTime;
+          this.nextReminderToFire.timeoutID = setTimeout(() => {
+            const reminderToExpire =
+              allUsers[usersIds[0]].reminders[reminderTime];
+            this._expireReminder(usersIds[0], reminderToExpire);
+          }, reminderTime - Date.now());
         });
-      });
+    }
   }
 
   // check web tokens
@@ -84,7 +91,7 @@ export default class Database {
       .then(data => data.val())
       .then(
         userData => {
-          const { reminders } = userData;
+          const { reminders, nextReminder } = userData;
           let updatedReminders = reminders === "empty" ? {} : { ...reminders };
           type === "update" &&
             (updatedReminders[reminder.id] = { ...reminder });
@@ -96,10 +103,14 @@ export default class Database {
             : null;
           user.update({
             reminders: isRemindersLength ? { ...updatedReminders } : "empty",
-            nextReminder: closestReminder
+            nextReminder:
+              closestReminder != nextReminder ? closestReminder : nextReminder
           });
           // TODO
           // implement watcher here to update all reminders changes
+          // check how it works
+          closestReminder != nextReminder && this.watcher.next();
+
           return isRemindersLength ? { ...updatedReminders } : null;
         },
         err => false
@@ -118,23 +129,31 @@ export default class Database {
         const updatedReminders = {
           ...reminders
         };
-        userData.update({ reminders: updatedReminders });
+        const nextClosestReminder = this._findUserClosestReminderDate(
+          reminders
+        );
+        userData.update({
+          reminders: updatedReminders,
+          nextReminder: nextClosestReminder
+        });
+        const { text, date, time } = reminder;
+        this.cbToBot({ id, text, date, time });
+        this.watcher.next();
       });
   }
 
   // manager of personal info
   async _personalManager(id, personal, type) {
     const personalData = await this.db.ref(path.personal(id));
-    personalData
+    return personalData
       .once("value")
       .then(data => data.val())
       .then(
         personalInfo => {
           const item = Object.entries(personal);
           const extra = personalInfo.extra || {};
-          type === "update" &&
-            (extra[item[0][0]] = item[1][1])(type === "delete") &&
-            delete extra[item[0][0]];
+          type === "update" && (extra[item[0][0]] = item[0][1]);
+          type === "delete" && delete extra[item[0][0]];
           const updatedPersonalData = {
             ...personalInfo,
             extra: {

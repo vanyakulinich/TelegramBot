@@ -95,7 +95,7 @@ export default {
         id: this.reminder.id
       });
       this.manager({
-        metthod: "put",
+        method: "put",
         target: "reminder",
         payload: { ...editedReminder }
       });

@@ -92,9 +92,13 @@ export default class Bot {
             : messages.invalid
         );
     });
-
+    this.db.botCB = this._cbToDbWatcher;
     // this.watcher.next();
     // this.db.setBotWatcher(this.watcher);
+  }
+
+  _cbToDbWatcher({ id, text, date, time }) {
+    this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
   }
 
   // watchReminders(newReminderId, newReminderTime) {
