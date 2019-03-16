@@ -58,7 +58,6 @@ export default {
         date: this.selectedDate,
         time: this.selectedTime
       });
-      console.log(newReminder);
       this.manager({
         method: "post",
         target: "reminder",

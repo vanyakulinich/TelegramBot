@@ -1,8 +1,8 @@
-// TODO: improve messages
 const botCommands = {
   start: `'start' - the description of bot`,
   help: `'help' - the list of bot commands`,
   link: `'link' - web link to personal page`,
+  list: `'list' - the list of all reminders, set up before`,
   remind: `'remind [text of your reminder] [numeric date in format dd.mm.yyyy] [numeric time in format hh:mm]'`
 };
 
@@ -11,37 +11,42 @@ const listOfCommands = `
   ${botCommands.start}
   ${botCommands.help}
   ${botCommands.remind}
+  ${botCommands.list}
   ${botCommands.link}
 `;
 
 export const messages = {
-  // TODO: pesonalize start message
-  start: `
-    Greetings!
-    This is a smart Reminder Bot.
-    You can store all reminders like events, todos or birthdays here.
-    Reminder Bot will help you not to forget about important events and remember all things.
-
-    With this bot you can manage your reminders.
+  start: name => `
+    Greetings, ${name}!
+    This is your SmartReminderBot.
+    You can store some necessary daily reminders here.
     ${listOfCommands}
-
-    The bot allows you to set up quickly a new reminder. To get, update, delete or manage in other way your reminders, please use your personal page.
-
-    To get full control and manage all your reminders, you can ask a web link from bot(just send message with text: link):
+    The bot allows you to set up quickly a new reminder. To get, update, delete or manage in other way your reminders, please use your personal page. Just send "link" to bot.
     You will recieve a web link to your personal protected page where you can manage all your personal info and all your reminders.
-    If you ask for link it will be able for 5 min to pass through. If you don't use this link during this time, you will have to ask for a new one.
+    If you ask for link it will be able for 1 min to pass through. If you don't use this link during this time, the page won't be avaliable anymore and you will have to ask for a new one.
     This is for your data security. When you get to web page, you can use it as long as you want.
   `,
   help: `
     Bot help.
     ${listOfCommands}
-
     To manage your reminders please use your personal web page.
-    To get access to it, set link command to bot.
+    To get access to it, send link command to bot.
   `,
   link: `
     Here is the link to your personal protected page for managing your reminders
   `,
+  list: reminders => {
+    if (!reminders.length) return "You have no reminders yet";
+    let renderList = "";
+    reminders.forEach((item, index) => {
+      const { date, time, text, expired } = item;
+      const expiredMark = expired ? "expired" : "active";
+      renderList += `${index + 1}. ${date} ${time} ${text} (${expiredMark})\n`;
+    });
+    return `
+    Here is the list of your reminders:\n${renderList}
+    `;
+  },
   invalid: `
     Sorry, invalid input. Please use one of the list below:
     ${listOfCommands}
@@ -52,8 +57,8 @@ export const messages = {
   `,
   pastYear: `You cannot choose year, that have already passed. Try again`,
   noleapYear: `You cannot choose the 29th of February in no leap year. Try again`,
-  invalidTime: `
-    Sorry, invalid time input. Please follow the syntax:
+  invalidDatetime: `
+    Sorry, invalid datetime input. Please follow the syntax:
     ${botCommands.remind}
   `,
   successReminder: match =>
@@ -61,10 +66,11 @@ export const messages = {
       match[3]
     }`,
   activatedReminder: ({ text, date, time }) => `
-    Hi!
-  This is your reminder bot.
+    Hi there!
+  This is your personal reminder bot.
   You asked me to remind you about ${text.toUpperCase()} on ${date} at ${time}.
   Please DO NOT FORGET about it.
+  Have a nice day!
   `,
   errorMsg: `Sorry, something went wrong...Please try again`
 };
@@ -78,24 +84,10 @@ export const remindMessage = (dateValidation, timeValidation, match) => {
   return messages.invalidRemind;
 };
 
-export const manageValidations = (validatedDate, validatedTime) => {
-  let defaultResult = {
-    valid: false,
-    msg: ""
-  };
-  if (!validatedTime) {
-    defaultResult.msg = messages.invalidTime;
-    return defaultResult;
-  }
-  if (validatedDate && validatedDate.length) defaultResult.msg = validatedDate;
-  if (validatedDate && typeof validatedDate === "boolean")
-    defaultResult.valid = true;
-  return defaultResult;
-};
-
 export const botRegEx = {
   start: /\/start|[Ss]tart/,
   help: /\/help|[Hh]elp/,
   link: /[Ll]ink/,
+  list: /[Ll]ist/,
   remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/
 };

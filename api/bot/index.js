@@ -2,14 +2,9 @@ import Promise from "bluebird";
 import TelegramBot from "node-telegram-bot-api";
 import TokenGenerator from "uuid-token-generator";
 import { BOT_KEY } from "../../config/bot";
-import {
-  messages,
-  botRegEx,
-  manageValidations
-} from "../../helpers/botHelpers";
+import { messages, botRegEx } from "../../helpers/botHelpers";
 import { validDate } from "../../utils/dateUtils";
 import { validTime } from "../../utils/timeUtils";
-import { watcherGenerator, createNewReminder } from "../../utils/botUtils";
 
 Promise.config({
   cancellation: true
@@ -20,21 +15,17 @@ export default class Bot {
     this.bot = new TelegramBot(BOT_KEY, { polling: true });
     this.tokgen = new TokenGenerator();
     this.db = database.DB;
-    // this.nextReminder = {
-    //   time: null,
-    //   userId: null,
-    //   timeoutID: null
-    // };
-    // this.watcher = watcherGenerator(this);
   }
 
   start() {
     // bot start chat
     this.bot.onText(botRegEx.start, async msg => {
       const dbResponse = await this.db.startNewUser(msg.chat);
+      const { first_name, last_name } = msg.from;
+      const name = first_name || last_name;
       this.bot.sendMessage(
         msg.chat.id,
-        dbResponse ? messages.start : messages.errorMsg
+        dbResponse ? messages.start(name) : messages.errorMsg
       );
     });
 
@@ -61,22 +52,24 @@ export default class Bot {
     this.bot.onText(botRegEx.remind, async (msg, match) => {
       const dateValidation = validDate(match[2]);
       const timeValidation = validTime(match[3], match[2]);
-      const isValid = manageValidations(dateValidation, timeValidation);
-      if (!isValid.valid) {
-        this.bot.sendMessage(msg.chat.id, isValid.msg);
+      if (!dateValidation || !timeValidation) {
+        this.bot.sendMessage(msg.chat.id, messages.invalidDatetime);
         return;
       }
-      const newReminder = createNewReminder(match);
       const dbResponse = await this.db.botDataHandler(
         msg.chat.id,
-        newReminder,
+        match,
         "post"
       );
-      // this.watchReminders(msg.chat.id, newReminder.dateMs);
       this.bot.sendMessage(
         msg.chat.id,
         dbResponse ? messages.successReminder(match) : messages.errorMsg
       );
+    });
+    // list of all reminders
+    this.bot.onText(botRegEx.list, async msg => {
+      const list = await this.db.botAskListOfReminders(msg.chat.id);
+      this.bot.sendMessage(msg.chat.id, messages.list(list || []));
     });
 
     // any other commands
@@ -92,51 +85,13 @@ export default class Bot {
             : messages.invalid
         );
     });
-    this.db.botCB = this._cbToDbWatcher;
-    // this.watcher.next();
-    // this.db.setBotWatcher(this.watcher);
+    this.db.botCB = this._cbToDbWatcher.bind(this);
   }
 
   _cbToDbWatcher({ id, text, date, time }) {
     this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
   }
 
-  // watchReminders(newReminderId, newReminderTime) {
-  //   return !this.nextReminder.time && !this.nextReminder.userId
-  //     ? this.watcher.next({
-  //         id: newReminderId,
-  //         time: newReminderTime
-  //       })
-  //     : this._checkForClosestReminder(newReminderId, newReminderTime);
-  // }
-
-  // // private methods
-  // async _activateClosestReminder(id, activateTime) {
-  //   const reminderData = await this.db.activateReminder(id, activateTime);
-  //   if (!reminderData) this.db._activateClosestReminder(id, activateTime);
-  //   // console.log(reminderData);
-  //   const { text, date, time } = reminderData;
-  //   this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
-  //   this._findNextClosestReminder();
-  // }
-
-  // async _findNextClosestReminder() {
-  //   const closestReminder = await this.db.findClosestReminderInUsers();
-  //   if (!closestReminder.time || !closestReminder.id) {
-  //     Object.keys(this.nextReminder).forEach(item => {
-  //       this.nextReminder[item] = null;
-  //     });
-  //     return;
-  //   }
-  //   this.watcher.next({ ...closestReminder });
-  // }
-
-  // _checkForClosestReminder(newId, newTime) {
-  //   if (newTime < this.nextReminder.time) {
-  //     this.watcher.next({ id: newId, time: newTime });
-  //   }
-  // }
-  // webapp
   async _setWebAppConnection(id) {
     const tokens = {
       publicToken: this.tokgen.generate(),
