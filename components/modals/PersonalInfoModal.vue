@@ -22,7 +22,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <Button :clickCB="closeDialog" title="cancel"/>
-          <Button :clickCB="handleInfo" :title="selected ? 'save' : 'add'"/>
+          <Button :clickCB="handleInfo" :title="selected ? 'save' : 'add'" btnColor="#31343b"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -102,5 +102,8 @@ export default {
 .v-btn {
   font-size: 20px;
   font-weight: 600;
+}
+.v-input {
+  font-size: 22px;
 }
 </style>

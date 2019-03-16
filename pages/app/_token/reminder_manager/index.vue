@@ -2,7 +2,7 @@
   <div>
     <ContentHeader text="My Reminders"/>
     <div v-if="reminders">
-      <v-divider class="header_divider"></v-divider>
+      <Divider class="header_divider"/>
       <template v-for="(item, itemKey) in reminders">
         <div :key="itemKey" class="item">
           <div class="item_inner">
@@ -17,7 +17,7 @@
             <ReminderModal :reminder="item"/>
           </div>
 
-          <v-divider></v-divider>
+          <Divider/>
         </div>
       </template>
     </div>
@@ -29,11 +29,13 @@
 import { mapGetters } from "vuex";
 import ContentHeader from "../../../../components/headers/ContentHeader.vue";
 import ReminderModal from "../../../../components/modals/ReminderModal.vue";
+import Divider from "../../../../components/divider/Divider.vue";
 export default {
   name: "all_reminders",
   components: {
     ContentHeader,
-    ReminderModal
+    ReminderModal,
+    Divider
   },
   computed: {
     ...mapGetters(["reminders"])
@@ -58,8 +60,8 @@ export default {
   margin: 30px 0;
 }
 .item_date_time {
-  justify-content: space-around;
-  width: 60%;
+  justify-content: space-between;
+  width: 33%;
   position: relative;
   flex-direction: row;
 }
@@ -71,10 +73,6 @@ export default {
   padding-left: 10px;
   word-break: break-word;
 }
-v-divider {
-  height: 2px;
-  width: 100%;
-}
 .header_divider {
   margin-bottom: 20px;
   background-color: rgb(206, 208, 223);
@@ -82,7 +80,7 @@ v-divider {
 .expired {
   position: absolute;
   top: -6px;
-  right: -44px;
+  right: -88px;
   color: red;
   transform: rotateZ(-15deg);
 }
@@ -95,6 +93,11 @@ v-divider {
 }
 .icon:active {
   text-shadow: 0px 0px 20px #d3dfff;
+}
+@media (max-width: 480px) {
+  .item_date_time {
+    flex-direction: column;
+  }
 }
 </style>
 

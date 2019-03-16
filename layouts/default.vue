@@ -61,7 +61,7 @@
     <v-content>
       <v-container fluid>
         <v-layout align-center justify-center>
-          <v-flex xs10>
+          <v-flex>
             <v-card>
               <v-card-text class="content_wrap">
                 <nuxt/>

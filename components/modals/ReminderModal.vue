@@ -40,7 +40,7 @@
             :clickCB="saveEdited"
             title="Save"
             v-if="reminder && !reminder.expired"
-            btnColor="blue-grey lighten-3"
+            btnColor="#31343b"
           />
           <Button :clickCB="delReminder" title="Delete" btnColor="red accent-1"/>
         </v-card-actions>
@@ -118,6 +118,7 @@ export default {
 .v-btn,
 .date_pickers {
   font-family: "Indie Flower", cursive;
+  font-size: 29px;
 }
 .v-btn {
   font-size: 20px;

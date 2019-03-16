@@ -15,7 +15,7 @@
         </div>
       </div>
       <v-card-actions class="form_buttons">
-        <Button title="Add" btnColor="blue accent-1" :clickCB="addNewReminder"/>
+        <Button title="Add" btnColor="#31343b" :clickCB="addNewReminder"/>
       </v-card-actions>
     </v-flex>
   </v-layout>

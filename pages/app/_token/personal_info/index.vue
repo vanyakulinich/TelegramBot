@@ -5,6 +5,7 @@
       <span class="field_title">name:</span>
       {{personal.firstName}} {{personal.lastName}}
     </div>
+    <Divider/>
     <div v-if="personal.extra" class="extraInfo">
       <div
         class="extra_item"
@@ -22,11 +23,7 @@
           v-if="selected && selected.name === itemKey && selected.value === item"
         >
           <div>
-            <PersonalInfoModal
-              buttonText="Edit"
-              buttonColor="blue-grey lighten-3"
-              :selected="selected"
-            />
+            <PersonalInfoModal buttonText="Edit" buttonColor="#5d8da5" :selected="selected"/>
           </div>
           <Button :clickCB="deleteSelected" title="'Delete'" btnColor="red accent-1"/>
         </div>
@@ -34,7 +31,7 @@
     </div>
     <div class="modal_wrap">
       <div>
-        <PersonalInfoModal buttonText="Add more info" buttonColor="rgb(48, 48, 48)"/>
+        <PersonalInfoModal buttonText="Add more info" buttonColor="#31343b"/>
       </div>
     </div>
   </div>
@@ -45,12 +42,14 @@ import { mapGetters, mapActions } from "vuex";
 import PersonalInfoModal from "../../../../components/modals/PersonalInfoModal.vue";
 import Button from "../../../../components/buttons/Button.vue";
 import ContentHeader from "../../../../components/headers/ContentHeader.vue";
+import Divider from "../../../../components/divider/Divider.vue";
 export default {
   name: "personal",
   components: {
     PersonalInfoModal,
     Button,
-    ContentHeader
+    ContentHeader,
+    Divider
   },
   data() {
     return {
@@ -88,10 +87,11 @@ export default {
 <style scoped>
 .names {
   font-size: 27px;
+  opacity: 0.5;
 }
 .field_title {
   font-size: 21px;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 .extra_item {
   width: fit-content;

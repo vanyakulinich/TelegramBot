@@ -55,9 +55,8 @@ export default {
   height: 40px;
   background: rgba(126, 125, 125, 0.5);
   width: 100%;
-  font-size: 20px;
+  font-size: 25px;
   box-shadow: 0px 0px 34px 7px rgba(126, 125, 125, 0.75);
-  font-size: 20px;
   cursor: pointer;
   padding-left: 15px;
 }
@@ -66,7 +65,10 @@ export default {
 }
 .vdatetime-calendar__month__day--selected > span > span,
 .vdatetime-calendar__month__day--selected:hover > span > span {
-  background: rgba(48, 48, 48, 0.8);
+  background: rgba(48, 48, 48, 0.9);
+}
+.vdatetime-calendar__month__day {
+  color: rgba(48, 48, 48, 1);
 }
 .vdatetime-popup {
   font-family: "Indie Flower", cursive;
