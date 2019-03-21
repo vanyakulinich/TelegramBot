@@ -46,3 +46,13 @@ export const createISODate = (date, time) => {
   const timeVals = time.split(":");
   return new Date(...dateVals, ...timeVals);
 };
+
+export const isToday = someDate => {
+  const date = typeof someDate === "number" ? new Date(someDate) : someDate;
+  const today = new Date();
+  return (
+    date.getDate() == today.getDate() &&
+    date.getMonth() == today.getMonth() &&
+    date.getFullYear() == today.getFullYear()
+  );
+};

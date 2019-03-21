@@ -39,6 +39,22 @@ const store = () =>
             text:
               "test2asddddddddasdafadfadsfs  asdddddddddddddddddddddddddddas asdasdqnjk us knandoqw qwiud c uq dkqdqwdq  qwdqweqwd qdnqowd",
             time: "10:00"
+          },
+          "1553199804297": {
+            date: "21.03.2019",
+            dateMs: 1553199804297,
+            dateISO: "2019-03-21T20:23:24.297Z",
+            expired: true,
+            text: "test",
+            time: "23:24"
+          },
+          "1553199804298": {
+            date: "21.03.2019",
+            dateMs: 1553199804298,
+            dateISO: "2019-03-21T20:23:24.297Z",
+            expired: false,
+            text: "test",
+            time: "23:24"
           }
         }
       }
