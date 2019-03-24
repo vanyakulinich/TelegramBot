@@ -7,6 +7,7 @@ import {
   checkLinkLifeTime,
   createNewReminder
 } from "../../utils/dbUtils";
+import { isToday } from "../../utils/dateUtils";
 
 export default class Database {
   constructor() {
@@ -48,18 +49,22 @@ export default class Database {
     return this._dataHandler(id, newReminder, method, "reminder");
   }
 
-  async botAskListOfReminders(id) {
+  async botAskListOfReminders(id, isTodayList) {
     const reminders = await this.db.ref(path.reminders(id));
     return reminders
       .once("value")
       .then(data => data.val())
       .then(
         list => {
-          const prepairedList = Object.keys(list).map(item => {
-            const { date, time, text, expired } = list[item];
-            return { date, time, text, expired };
+          let prepairedList = "";
+          if (list === "empty" || !list) return "empty";
+          Object.keys(list).forEach(item => {
+            const { date, time, text, expired, dateMs } = list[item];
+            if (isTodayList && !isToday(dateMs)) return;
+            const expiredMark = expired ? "expired" : "active";
+            prepairedList += `${date} ${time} ${text} (${expiredMark})\n`;
           });
-          return prepairedList;
+          return prepairedList || "empty";
         },
         err => false
       );
@@ -195,7 +200,7 @@ export default class Database {
     for (let reminder in reminders) {
       const { expired, dateMs, id } = reminders[reminder];
       if (expired) continue;
-      if (!closestReminderDate || dateMs < closestReminderDate) {
+      if (!closestReminderDate || dateMs < closestReminderDate.dateMs) {
         closestReminderDate = { dateMs, id };
       }
     }

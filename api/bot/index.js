@@ -66,10 +66,23 @@ export default class Bot {
         dbResponse ? messages.successReminder(match) : messages.errorMsg
       );
     });
-    // list of all reminders
-    this.bot.onText(botRegEx.list, async msg => {
-      const list = await this.db.botAskListOfReminders(msg.chat.id);
-      this.bot.sendMessage(msg.chat.id, messages.list(list || []));
+    // list of all or all today's reminders
+    this.bot.onText(botRegEx.lists, async (msg, match) => {
+      let isTodayList = false;
+      if (match.includes("today") || match.includes("Today")) {
+        isTodayList = true;
+      }
+
+      const list = await this.db.botAskListOfReminders(
+        msg.chat.id,
+        isTodayList
+      );
+      this.bot.sendMessage(
+        msg.chat.id,
+        typeof list === "string"
+          ? messages.lists(list, isTodayList)
+          : messages.errorMsg
+      );
     });
 
     // any other commands

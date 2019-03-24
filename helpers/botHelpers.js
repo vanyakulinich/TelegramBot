@@ -3,6 +3,7 @@ const botCommands = {
   help: `'help' - the list of bot commands`,
   link: `'link' - web link to personal page`,
   list: `'list' - the list of all reminders, set up before`,
+  today: `'today' - the list of all today's reminders`,
   remind: `'remind [text of your reminder] [numeric date in format dd.mm.yyyy] [numeric time in format hh:mm]'`
 };
 
@@ -12,6 +13,7 @@ const listOfCommands = `
   ${botCommands.help}
   ${botCommands.remind}
   ${botCommands.list}
+  ${botCommands.today}
   ${botCommands.link}
 `;
 
@@ -35,18 +37,14 @@ export const messages = {
   link: `
     Here is the link to your personal protected page for managing your reminders
   `,
-  list: reminders => {
-    if (!reminders.length) return "You have no reminders yet";
-    let renderList = "";
-    reminders.forEach((item, index) => {
-      const { date, time, text, expired } = item;
-      const expiredMark = expired ? "expired" : "active";
-      renderList += `${index + 1}. ${date} ${time} ${text} (${expiredMark})\n`;
-    });
-    return `
-    Here is the list of your reminders:\n${renderList}
-    `;
-  },
+  lists: (reminders, isToday) =>
+    reminders === "empty"
+      ? `You have no reminders ${isToday ? "for today" : ""} yet`
+      : `
+    Here is the list of your ${
+      isToday ? "today's" : ""
+    } reminders:\n${reminders}
+    `,
   invalid: `
     Sorry, invalid input. Please use one of the list below:
     ${listOfCommands}
@@ -88,6 +86,6 @@ export const botRegEx = {
   start: /\/start|[Ss]tart/,
   help: /\/help|[Hh]elp/,
   link: /[Ll]ink/,
-  list: /[Ll]ist/,
+  lists: /([Tt]oday)|([Ll]ist)/,
   remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/
 };
