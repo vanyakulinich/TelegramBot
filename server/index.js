@@ -38,6 +38,6 @@ export default class Server {
           });
         });
       })
-      .listen(port, () => console.log(`Server is on ${port} port`));
+      .listen(port);
   }
 }

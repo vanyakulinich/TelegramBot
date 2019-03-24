@@ -70,6 +70,7 @@ export const messages = {
   Please DO NOT FORGET about it.
   Have a nice day!
   `,
+  reminderExist: `Sorry, you already have a reminder at this time. Please select another time`,
   errorMsg: `Sorry, something went wrong...Please try again`
 };
 

@@ -2,6 +2,7 @@ import Promise from "bluebird";
 import TelegramBot from "node-telegram-bot-api";
 import TokenGenerator from "uuid-token-generator";
 import { BOT_KEY } from "../../config/bot";
+import { createWebAppUrl } from "../../config/webAppUrl";
 import { messages, botRegEx } from "../../helpers/botHelpers";
 import { validDate } from "../../utils/dateUtils";
 import { validTime } from "../../utils/timeUtils";
@@ -41,8 +42,7 @@ export default class Bot {
         this.bot.sendMessage(msg.chat.id, messages.errorMsg);
         return;
       }
-      // TODO: implement real url when deploying
-      const link = `http://www.localhost:3000/app/${linkPart}/reminder_manager`;
+      const link = createWebAppUrl(linkPart);
       this.bot.sendMessage(msg.chat.id, `[${messages.link}](${link})`, {
         parse_mode: "Markdown"
       });
@@ -61,10 +61,15 @@ export default class Bot {
         match,
         "post"
       );
-      this.bot.sendMessage(
-        msg.chat.id,
-        dbResponse ? messages.successReminder(match) : messages.errorMsg
-      );
+      const responseMsg = (() => {
+        if (dbResponse) {
+          return dbResponse === "exist"
+            ? messages.reminderExist
+            : messages.successReminder(match);
+        }
+        return messages.errorMsg;
+      })();
+      this.bot.sendMessage(msg.chat.id, responseMsg);
     });
     // list of all or all today's reminders
     this.bot.onText(botRegEx.lists, async (msg, match) => {

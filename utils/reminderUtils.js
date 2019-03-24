@@ -4,6 +4,7 @@ import {
   beautifyTimeFromISOString,
   combineDateAndTimeISOStrings
 } from "./ISOStringsUtils";
+
 export const createNewReminder = ({ text, date, time, dateISO }) => {
   const dateMs = createMSDate(dateISO);
   return {
@@ -42,4 +43,14 @@ export const createNewReminderFromInputs = inputValues => {
   };
 
   return createNewReminder(newReminderData);
+};
+
+export const checkIfReminderTimeIsAvaliable = (newReminder, reminders) => {
+  if (!reminders || !Object.keys(reminders)) return false;
+  const result = Object.keys(reminders).find(el => {
+    const item = reminders[el];
+    const { date, time, dateMs } = newReminder;
+    return item.dateMs === dateMs || (item.date === date && item.time === time);
+  });
+  return result;
 };

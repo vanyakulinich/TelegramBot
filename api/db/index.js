@@ -8,6 +8,7 @@ import {
   createNewReminder
 } from "../../utils/dbUtils";
 import { isToday } from "../../utils/dateUtils";
+import { checkIfReminderTimeIsAvaliable } from "../../utils/reminderUtils";
 
 export default class Database {
   constructor() {
@@ -21,16 +22,14 @@ export default class Database {
     this.watcher.next();
   }
 
-  // db instance getter
   get DB() {
     return this;
   }
-  // setter of bot reverse callback
+
   set botCB(cb) {
     this.cbToBot = cb;
   }
 
-  // new user creator
   async startNewUser(userData) {
     const users = await this.db.ref(path.users());
     return users.once("value").then(
@@ -43,7 +42,6 @@ export default class Database {
     );
   }
 
-  // bot data handler
   botDataHandler(id, data, method) {
     const newReminder = createNewReminder(data);
     return this._dataHandler(id, newReminder, method, "reminder");
@@ -70,13 +68,11 @@ export default class Database {
       );
   }
 
-  // reciever of data from web app
   async manageDataFromWebRequest({ tokens, data, type, method }) {
     const userId = await this._checkTokens(tokens);
     return userId ? this._dataHandler(userId, data, method, type) : false;
   }
 
-  // checker of web tokens
   async _checkTokens(tokens) {
     const userId = tokens.id ^ ID_DECODER;
     const webConnection = await this.db.ref(path.web(userId));
@@ -94,14 +90,12 @@ export default class Database {
       );
   }
 
-  // private data handler
   _dataHandler(id, data, method, type) {
     const actionType =
       method === "put" || method === "post" ? "update" : method;
     return this[`_${type}Manager`](id, data, actionType);
   }
 
-  // manager of reminders
   async _reminderManager(id, reminder, type) {
     const user = await this.db.ref(path.user(id));
     return user
@@ -110,9 +104,16 @@ export default class Database {
       .then(
         userData => {
           const { reminders, nextReminder = null } = userData;
-          let updatedReminders = reminders === "empty" ? {} : { ...reminders };
-          type === "update" &&
-            (updatedReminders[reminder.id] = { ...reminder });
+          let updatedReminders =
+            !reminders || reminders === "empty" ? {} : { ...reminders };
+          if (type === "update") {
+            const reminderExist = checkIfReminderTimeIsAvaliable(
+              reminder,
+              updatedReminders
+            );
+            if (reminderExist) return "exist";
+            updatedReminders[reminder.id] = { ...reminder };
+          }
           type === "delete" && delete updatedReminders[reminder.id];
 
           const isRemindersLength = !!Object.keys(updatedReminders).length;
@@ -132,7 +133,6 @@ export default class Database {
       );
   }
 
-  // manager of personal info
   async _personalManager(id, personal, type) {
     const personalData = await this.db.ref(path.personal(id));
     return personalData
@@ -157,7 +157,6 @@ export default class Database {
       );
   }
 
-  // watcher of next reminder to fire
   *watcherGenerator() {
     while (true) {
       yield;
@@ -194,7 +193,6 @@ export default class Database {
     }
   }
 
-  // find and set user closest reminder
   _findUserClosestReminderDate(reminders) {
     let closestReminderDate = null;
     for (let reminder in reminders) {
@@ -207,7 +205,6 @@ export default class Database {
     return closestReminderDate;
   }
 
-  // set up expired reminder, when it has already fired
   async _expireReminder(id, reminderId) {
     const user = await this.db.ref(path.user(id));
     user

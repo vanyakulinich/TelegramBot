@@ -2,6 +2,7 @@
   <v-layout>
     <v-flex align-center justify-center>
       <ContentHeader text="Add New Reminder"/>
+      <div v-if="reminderExist">Sorry reminder already exists</div>
       <div>
         <NewReminderHeader title="Enter Your Reminder"/>
         <Input label="Reminder Text" :inputCB="reminderText"/>
@@ -30,7 +31,8 @@ import NewReminderHeader from "../../../../components/headers/NewReminderHeader"
 import { createTodayISODateWithOffset } from "../../../../utils/ISOStringsUtils";
 import { createNewReminderFromInputs } from "../../../../utils/reminderUtils";
 import { manageReminderMethods } from "../../../../mixins/manageReminderMethods";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import { setTimeout } from "timers";
 
 export default {
   name: "add_new_reminder",
@@ -48,7 +50,8 @@ export default {
       minDate: createTodayISODateWithOffset(1000 * 60 * 60 * 2), // plus 2h due to UTC format to disable previous day
       startTime: createTodayISODateWithOffset(1000 * 60 * 5), // default time is +5min to current time
       selectedDate: null,
-      selectedTime: null
+      selectedTime: null,
+      reminderExist: false
     };
   },
   methods: {
@@ -58,6 +61,13 @@ export default {
         date: this.selectedDate,
         time: this.selectedTime
       });
+
+      const isReminderExist = this.existingReminder(newReminder);
+      if (isReminderExist) {
+        this.reminderExist = true;
+        setTimeout(() => (this.reminderExist = false), 4000);
+        return;
+      }
       this.manager({
         method: "post",
         target: "reminder",
@@ -68,6 +78,9 @@ export default {
       });
     },
     ...mapActions(["manager"])
+  },
+  computed: {
+    ...mapGetters(["existingReminder"])
   }
 };
 </script>
