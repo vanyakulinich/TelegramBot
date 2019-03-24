@@ -2,7 +2,7 @@ import Promise from "bluebird";
 import TelegramBot from "node-telegram-bot-api";
 import TokenGenerator from "uuid-token-generator";
 import { BOT_KEY } from "../../config/bot";
-import { createWebAppUrl } from "../../config/webAppUrl";
+import { createWebAppUrl } from "./config";
 import { messages, botRegEx } from "../../helpers/botHelpers";
 import { validDate } from "../../utils/dateUtils";
 import { validTime } from "../../utils/timeUtils";

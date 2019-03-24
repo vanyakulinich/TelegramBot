@@ -1,4 +1,4 @@
-import { baseURL } from "./config/api";
+import { baseURL } from "./server/config";
 module.exports = {
   /*
    ** Headers of the page

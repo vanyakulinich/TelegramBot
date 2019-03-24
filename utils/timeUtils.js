@@ -1,24 +1,30 @@
+const FIRST_HOUR_OR_MIN = 0;
+const LAST_HOUR = 24;
+const LAST_MIN = 59;
+
 export const validTime = (inputTime, inputDate) => {
-  const times = inputTime.split(":");
-  const hours = validHours(times[0]);
-  const minutes = validMinutes(times[1]);
-  const date = inputDate.split(".");
+  const [hours, mins] = inputTime.split(":");
+  const hours = validHours(hours);
+  const minutes = validMinutes(mins);
+  const [day, month, year] = inputDate.split(".");
   const notPastTime =
     hours &&
     minutes &&
     validCurrentTime({
-      hours: times[0],
-      mins: times[1],
-      day: date[0],
-      month: date[1],
-      year: date[2]
+      hours,
+      mins,
+      day,
+      month,
+      year
     });
   return hours && minutes && notPastTime;
 };
 
-export const validHours = hours => +hours >= 0 && +hours <= 24;
+export const validHours = hours =>
+  +hours >= FIRST_HOUR_OR_MIN && +hours <= LAST_HOUR;
 
-export const validMinutes = mins => +mins >= 0 && +mins <= 59;
+export const validMinutes = mins =>
+  +mins >= FIRST_HOUR_OR_MIN && +mins <= LAST_MIN;
 
 export const validCurrentTime = ({ hours, mins, day, month }) => {
   const today = new Date();

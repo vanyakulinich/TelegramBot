@@ -1,11 +1,24 @@
 import { messages } from "../helpers/botHelpers";
 
+const months = {
+  start: 1,
+  febr: 2,
+  end: 12,
+  monthsWith30Days: [4, 6, 9, 11]
+};
+const daysInMonth = {
+  "31": 31,
+  "30": 30,
+  "28": 28,
+  "29": 29
+};
+
 export const validDate = complexDate => {
-  const dates = complexDate.split(".");
-  const year = validYear(dates[2]);
+  const [dayFromDate, monthFromDate, yearFromDate] = complexDate.split(".");
+  const year = validYear(yearFromDate);
   if (!year) return messages.pastYear;
-  const month = validMonth(dates[1]);
-  const days = validDays(dates[0], month, year);
+  const month = validMonth(monthFromDate);
+  const days = validDays(dayFromDate, month, year);
   if (days === "noleap") return messages.noleapYear;
   const currentDate = new Date();
   const notPastDay = days >= currentDate.getDate();
@@ -18,11 +31,13 @@ export const validDate = complexDate => {
 export const validYear = year =>
   +year >= new Date().getFullYear() ? +year : false;
 export const validMonth = month =>
-  +month >= 1 && +month <= 12 ? +month : false;
+  +month >= months.start && +month <= months.end ? +month : false;
 export const validDays = (inputDay, month, year) => {
   if (!month) return false;
   const days = checkDaysInMonth(month, year);
-  return month === 2 && +inputDay === 29 && !isLeapYear(year)
+  return month === months.febr &&
+    +inputDay === daysInMonth["29"] &&
+    !isLeapYear(year)
     ? "noleap"
     : +inputDay > 0 && +inputDay <= days
     ? +inputDay
@@ -30,10 +45,10 @@ export const validDays = (inputDay, month, year) => {
 };
 
 export const checkDaysInMonth = (month, year) => {
-  if (isLeapYear(year) && month === 2) return 29;
-  if (month === 2) return 28;
-  if (month == 4 || month === 6 || month === 9 || month === 11) return 30;
-  return 31;
+  if (isLeapYear(year) && month === months.febr) return daysInMonth["29"];
+  if (month === months.febr) return daysInMonth["28"];
+  if (months.monthsWith30Days.includes(month)) return daysInMonth["30"];
+  return daysInMonth["31"];
 };
 
 export const isLeapYear = year => year % 4 === 0;

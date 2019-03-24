@@ -1,6 +1,6 @@
 import types from "./types";
 import { getters } from "./getters";
-import { apiEndpoints } from "../config/api";
+import { apiEndpoints } from "../server/config";
 
 const getTokens = state => {
   const { id, privateToken, publicToken } = getters.tokens(state);

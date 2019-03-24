@@ -1,9 +1,5 @@
 import Router from "koa-router";
-import {
-  apiMethods,
-  apiEndpoints,
-  closeConnectionEndpoint
-} from "../config/api";
+import { apiMethods, apiEndpoints, closeConnectionEndpoint } from "./config";
 
 export class ApiRouter {
   constructor(db) {
