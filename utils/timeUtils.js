@@ -12,7 +12,7 @@ export const validTime = (inputTime, inputDate) => {
     minutes &&
     validCurrentTime({
       hours,
-      mins,
+      minutes,
       day,
       month,
       year
