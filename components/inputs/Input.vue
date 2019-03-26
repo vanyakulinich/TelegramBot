@@ -1,10 +1,15 @@
 <template>
-  <v-text-field :disabled="disabled" :label="label" :color="color" @input="inputCB" :value="value"></v-text-field>
+  <v-text-field 
+    :disabled="disabled" 
+    :label="label" 
+    :color="color" 
+    @input="inputCB" 
+    :value="value"/>
 </template>
 
 <script>
 export default {
-  name: "custom_input",
+  name: "CustomInput",
   props: {
     disabled: {
       type: Boolean,

@@ -4,7 +4,7 @@ const botCommands = {
   link: `'link' - web link to personal page`,
   list: `'list' - the list of all reminders, set up before`,
   today: `'today' - the list of all today's reminders`,
-  remind: `'remind [text of your reminder] [numeric date in format dd.mm.yyyy] [numeric time in format hh:mm]'`
+  remind: `'remind [text of your reminder] [dd.mm.yyyy] [hh:mm]'`
 };
 
 const listOfCommands = `

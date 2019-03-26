@@ -1,10 +1,10 @@
 <template>
-  <v-divider :style="style"></v-divider>
+  <v-divider :style="style"/>
 </template>
 
 <script>
 export default {
-  name: "divider",
+  name: "Divider",
 
   props: {
     height: {

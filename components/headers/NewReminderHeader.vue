@@ -1,10 +1,10 @@
 <template>
-  <h4>{{title}}</h4>
+  <h4>{{ title }}</h4>
 </template>
 
 <script>
 export default {
-  name: "new_reminder_title",
+  name: "NewReminderTitle",
   props: {
     title: {
       type: String,

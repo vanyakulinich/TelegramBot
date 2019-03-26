@@ -3,9 +3,9 @@ const LAST_HOUR = 24;
 const LAST_MIN = 59;
 
 export const validTime = (inputTime, inputDate) => {
-  const [hours, mins] = inputTime.split(":");
-  const hours = validHours(hours);
-  const minutes = validMinutes(mins);
+  const [hoursFromDate, minsFromDate] = inputTime.split(":");
+  const hours = validHours(hoursFromDate);
+  const minutes = validMinutes(minsFromDate);
   const [day, month, year] = inputDate.split(".");
   const notPastTime =
     hours &&

@@ -5,23 +5,30 @@
       <Divider class="header_divider"/>
       <h2 class="filters_header">Reminders Filters:</h2>
       <div class="filters">
-        <div v-for="(value, filter) in filters" :key="filter" class="filter_item">
+        <div 
+          v-for="(value, filter) in filters" 
+          :key="filter" 
+          class="filter_item">
           <v-switch
             :input-value="value"
             :label="capitalizeFilterName(filter)"
             color="rgb(93, 141, 165)"
             @change="handleLastFilter(filter)"
-          ></v-switch>
+          />
         </div>
       </div>
       <Divider/>
       <template v-for="(item, itemKey) in reminders">
-        <div :key="itemKey" class="item">
+        <div 
+          :key="itemKey" 
+          class="item">
           <div class="item_inner">
             <div class="item_date_time">
-              <div>{{item.date}}</div>
-              <div>{{item.time}}</div>
-              <div class="expired" v-if="item.expired">expired</div>
+              <div>{{ item.date }}</div>
+              <div>{{ item.time }}</div>
+              <div 
+                class="expired" 
+                v-if="item.expired">expired</div>
             </div>
             <div class="item_text">{{ item.text }}</div>
           </div>
@@ -43,7 +50,7 @@ import ContentHeader from "../../../../components/headers/ContentHeader.vue";
 import ReminderModal from "../../../../components/modals/ReminderModal.vue";
 import Divider from "../../../../components/divider/Divider.vue";
 export default {
-  name: "all_reminders",
+  name: "AllReminders",
   components: {
     ContentHeader,
     ReminderModal,

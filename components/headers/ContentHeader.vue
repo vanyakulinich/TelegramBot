@@ -1,10 +1,10 @@
 <template>
-  <div class="header">{{text}}</div>
+  <div class="header">{{ text }}</div>
 </template>
 
 <script>
 export default {
-  name: "content_header",
+  name: "ContentHeader",
   props: {
     text: {
       type: String,

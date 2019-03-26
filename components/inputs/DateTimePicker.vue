@@ -18,7 +18,7 @@ import {
   getCurrentTimeZone
 } from "../../utils/ISOStringsUtils";
 export default {
-  name: "date_time_picker",
+  name: "DateTimePicker",
   props: {
     datepickerType: {
       type: String,

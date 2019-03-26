@@ -1,5 +1,7 @@
 <template>
-  <v-app id="sandbox" dark>
+  <v-app 
+    id="sandbox" 
+    dark>
     <v-navigation-drawer
       class="menu_wrap"
       v-model="primaryDrawer.model"
@@ -12,11 +14,17 @@
       overflow
       app
     >
-      <v-container fluid class="menu">
-        <v-layout align-center justify-center>
+      <v-container 
+        fluid 
+        class="menu">
+        <v-layout 
+          align-center 
+          justify-center>
           <v-flex>
             <v-card-title class="menu_title">Menu</v-card-title>
-            <div class="close_icon" @click.stop="toggleMenu">
+            <div 
+              class="close_icon" 
+              @click.stop="toggleMenu">
               <v-icon x-large>mdi-close</v-icon>
             </div>
             <v-card class="menu_items_wrap">
@@ -24,14 +32,14 @@
               <v-card-text class="menu_link_wrap">
                 <MenuLink
                   :path="`/app/${token}/reminder_manager`"
-                  :clickCB="toggleMenu"
+                  :click-cb="toggleMenu"
                   :title="'My Reminders'"
                 />
               </v-card-text>
               <v-card-text class="menu_link_wrap">
                 <MenuLink
                   :path="`/app/${token}/reminder_manager/new`"
-                  :clickCB="toggleMenu"
+                  :click-cb="toggleMenu"
                   :title="'Add New Reminder'"
                 />
               </v-card-text>
@@ -41,7 +49,7 @@
               <v-card-text class="menu_link_wrap">
                 <MenuLink
                   :path="`/app/${token}/personal_info`"
-                  :clickCB="toggleMenu"
+                  :click-cb="toggleMenu"
                   :title="'Manage Personal Info'"
                 />
               </v-card-text>
@@ -50,9 +58,14 @@
         </v-layout>
       </v-container>
     </v-navigation-drawer>
-    <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
+    <v-toolbar 
+      :clipped-left="primaryDrawer.clipped" 
+      app 
+      absolute>
       <div v-if="!error">
-        <v-toolbar-side-icon v-if="primaryDrawer.type !== 'permanent'" @click.stop="toggleMenu"></v-toolbar-side-icon>
+        <v-toolbar-side-icon 
+          v-if="primaryDrawer.type !== 'permanent'" 
+          @click.stop="toggleMenu"/>
       </div>
       <v-toolbar-title>
         <span class="toolbar_title">Reminder Manager</span>
@@ -60,7 +73,9 @@
     </v-toolbar>
     <v-content>
       <v-container fluid>
-        <v-layout align-center justify-center>
+        <v-layout 
+          align-center 
+          justify-center>
           <v-flex>
             <v-card>
               <v-card-text class="content_wrap">

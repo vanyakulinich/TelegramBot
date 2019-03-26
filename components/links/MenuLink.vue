@@ -1,12 +1,14 @@
 <template>
-  <nuxt-link :to="path" class="menu_link">
-    <div @click="clickCB">{{title}}</div>
+  <nuxt-link 
+    :to="path" 
+    class="menu_link">
+    <div @click="clickCB">{{ title }}</div>
   </nuxt-link>
 </template>
 
 <script>
 export default {
-  name: "menu_link",
+  name: "MenuLink",
   props: {
     path: {
       type: String,

@@ -1,12 +1,16 @@
 <template>
-  <div v-if="personal" @click="eraseSelected">
+  <div 
+    v-if="personal" 
+    @click="eraseSelected">
     <ContentHeader text="Personal Info"/>
     <div class="names">
       <span class="field_title">name:</span>
-      {{personal.firstName}} {{personal.lastName}}
+      {{ personal.firstName }} {{ personal.lastName }}
     </div>
     <Divider/>
-    <div v-if="personal.extra" class="extraInfo">
+    <div 
+      v-if="personal.extra" 
+      class="extraInfo">
       <div
         class="extra_item"
         v-for="(item, itemKey) in personal.extra"
@@ -15,23 +19,31 @@
         :class="selected && selected.name === itemKey && selected.value === item ? 'active_item' : ''"
       >
         <div>
-          <span class="field_title">{{itemKey}}:</span>
-          {{item}}
+          <span class="field_title">{{ itemKey }}:</span>
+          {{ item }}
         </div>
         <div
           class="edit_delete_wrap"
           v-if="selected && selected.name === itemKey && selected.value === item"
         >
           <div>
-            <PersonalInfoModal buttonText="Edit" buttonColor="#5d8da5" :selected="selected"/>
+            <PersonalInfoModal 
+              button-text="Edit" 
+              button-color="#5d8da5" 
+              :selected="selected"/>
           </div>
-          <Button :clickCB="deleteSelected" title="'Delete'" btnColor="red accent-1"/>
+          <Button 
+            :clickCB="deleteSelected" 
+            title="'Delete'" 
+            btnColor="red accent-1"/>
         </div>
       </div>
     </div>
     <div class="modal_wrap">
       <div>
-        <PersonalInfoModal buttonText="Add more info" buttonColor="#31343b"/>
+        <PersonalInfoModal 
+          button-text="Add more info" 
+          button-color="#31343b"/>
       </div>
     </div>
   </div>
@@ -44,7 +56,7 @@ import Button from "../../../../components/buttons/Button.vue";
 import ContentHeader from "../../../../components/headers/ContentHeader.vue";
 import Divider from "../../../../components/divider/Divider.vue";
 export default {
-  name: "personal",
+  name: "Personal",
   components: {
     PersonalInfoModal,
     Button,
