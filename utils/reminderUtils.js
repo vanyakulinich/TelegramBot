@@ -1,9 +1,16 @@
-import { createMSDate } from "./dateUtils";
+import { createMSDate, validDate } from "./dateUtils";
+import { validTime } from "./timeUtils";
 import {
   beautifyDateFromISOString,
   beautifyTimeFromISOString,
   combineDateAndTimeISOStrings
 } from "./ISOStringsUtils";
+
+export const reminderInputDateValidation = match => {
+  const dateValidated = validDate(match[2]);
+  const timeValidated = validTime(match[3], match[2]);
+  return { dateValidated, timeValidated };
+};
 
 export const createNewReminder = ({ text, date, time, dateISO }) => {
   const dateMs = createMSDate(dateISO);

@@ -34,9 +34,7 @@ export const messages = {
     To manage your reminders please use your personal web page.
     To get access to it, send link command to bot.
   `,
-  link: `
-    Here is the link to your personal protected page for managing your reminders
-  `,
+  link: `Here is the link to your personal protected page for managing your reminders `,
   lists: (reminders, isToday) =>
     reminders === "empty"
       ? `You have no reminders ${isToday ? "for today" : ""} yet`
@@ -88,5 +86,6 @@ export const botRegEx = {
   help: /\/help|[Hh]elp/,
   link: /[Ll]ink/,
   lists: /([Tt]oday)|([Ll]ist)/,
-  remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/
+  remind: /[Rr]emind (.{1,}) (\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/,
+  other: /(.+)/
 };
