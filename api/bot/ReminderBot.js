@@ -5,10 +5,9 @@ Promise.config({
   cancellation: true
 });
 
-export default class Bot extends BotLib {
+export default class ReminderBot extends BotLib {
   constructor(database) {
-    super();
-    this.db = database.DB;
+    super(database);
     this.facilities = this._constructBotFacilites();
   }
 
@@ -21,6 +20,7 @@ export default class Bot extends BotLib {
       };
       this.recieveMsg(dataForMsgReciever);
     }
-    this.db.botCB = this._callbackbToDBWatcher.bind(this);
+
+    this.db.registerCallback({ botCallback: this._botCallback.bind(this) });
   }
 }

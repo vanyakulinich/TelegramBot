@@ -4,13 +4,13 @@ import { Nuxt, Builder } from "nuxt";
 import bodyParser from "koa-bodyparser";
 import nuxtConfig from "../nuxt.config";
 import { parseToken } from "../helpers/serverHelpers";
-import { ApiRouter } from "./router";
+import ApiRouter from "./router";
 
 export default class Server {
-  constructor(database) {
+  constructor(DB) {
     this.server = new Koa();
     this.nuxt = new Nuxt(nuxtConfig);
-    this.db = database.DB;
+    this.db = DB.database;
     this.router = new ApiRouter(this.db).getRouter();
   }
 

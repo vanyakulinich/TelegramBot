@@ -1,4 +1,5 @@
-import { firebase, ID_DECODER } from "../../config/db";
+import FirebaseBasic from "./Database";
+import { ID_DECODER } from "../../config/db";
 import {
   dbPath as path,
   createNewUser,
@@ -10,9 +11,37 @@ import {
 import { isToday } from "../../utils/dateUtils";
 import { checkIfReminderTimeIsAvaliable } from "../../utils/reminderUtils";
 
-export default class Database {
+// TODO: REmove these methods to basic class
+class DatabaseLib extends FirebaseBasic {
   constructor() {
-    this.db = firebase.database();
+    super();
+  }
+  _applyIdDecoder(id) {
+    return id ^ ID_DECODER;
+  }
+
+  async _dbDataAccess(path) {
+    try {
+      const dbRef = await this.db.ref(path);
+      const dbData = await dbRef.once("value");
+      return { dbData, dbRef };
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async _dbDataValAccess(path) {
+    const dbAccess = await this._dbDataAccess(path);
+    if (!dbAccess) return false;
+    const { dbRef, dbData } = dbAccess;
+    return { dbRef, dbDataVal: dbData.val() };
+  }
+}
+
+// --------------------------------------------
+export default class DBLib extends DatabaseLib {
+  constructor() {
+    super();
     this.watcher = this.watcherGenerator();
     this.nextReminderToFire = {
       time: null,
@@ -22,24 +51,13 @@ export default class Database {
     this.watcher.next();
   }
 
-  get DB() {
-    return this;
-  }
-
-  set botCB(cb) {
-    this.cbToBot = cb;
-  }
-
   async startNewUser(userData) {
-    const users = await this.db.ref(path.users());
-    return users.once("value").then(
-      data => {
-        !data.child(userData.id).exists() &&
-          users.update(createNewUser(userData));
-        return true;
-      },
-      err => false
-    );
+    const dbAccess = await this._dbDataAccess(path.users());
+    if (!dbAccess) return false;
+    const { dbData, dbRef } = dbAccess;
+    const isNewUser = !dbData.child(userData.id).exists();
+    if (isNewUser) dbRef.update(createNewUser(userData));
+    return true;
   }
 
   botDataHandler(id, data, method) {
@@ -48,24 +66,19 @@ export default class Database {
   }
 
   async botAskListOfReminders(id, isTodayList) {
-    const reminders = await this.db.ref(path.reminders(id));
-    return reminders
-      .once("value")
-      .then(data => data.val())
-      .then(
-        list => {
-          let prepairedList = "";
-          if (list === "empty" || !list) return "empty";
-          Object.keys(list).forEach(item => {
-            const { date, time, text, expired, dateMs } = list[item];
-            if (isTodayList && !isToday(dateMs)) return;
-            const expiredMark = expired ? "expired" : "active";
-            prepairedList += `${date} ${time} ${text} (${expiredMark})\n`;
-          });
-          return prepairedList || "empty";
-        },
-        err => false
-      );
+    const dbAccess = await this._dbDataValAccess(path.reminders(id));
+    if (!dbAccess) return false;
+    const { dbDataVal: remindersList } = dbAccess;
+    let prepairedList = "";
+    const isEmptyList = remindersList === "empty" || !remindersList;
+    if (isEmptyList) return "empty";
+    Object.keys(remindersList).forEach(item => {
+      const { date, time, text, expired, dateMs } = remindersList[item];
+      if (isTodayList && !isToday(dateMs)) return;
+      const expiredMark = expired ? "expired" : "active";
+      prepairedList += `${date} ${time} ${text} (${expiredMark})\n`;
+    });
+    return prepairedList || "empty";
   }
 
   async manageDataFromWebRequest({ tokens, data, type, method }) {
@@ -74,20 +87,16 @@ export default class Database {
   }
 
   async _checkTokens(tokens) {
-    const userId = tokens.id ^ ID_DECODER;
-    const webConnection = await this.db.ref(path.web(userId));
-    return webConnection
-      .once("value")
-      .then(data => data.val())
-      .then(
-        webConnect =>
-          webConnect &&
-          webConnect.publicToken === tokens.publicToken &&
-          webConnect.privateToken === tokens.privateToken
-            ? userId
-            : false,
-        err => false
-      );
+    const userId = this._applyIdDecoder(tokens.id);
+    const dbAccess = await this._dbDataValAccess(path.web(userId));
+    if (!dbAccess) return false;
+    const { dbDataVal: webConnect } = dbAccess;
+    const isValidConnection =
+      webConnect &&
+      webConnect.publicToken === tokens.publicToken &&
+      webConnect.privateToken === tokens.privateToken;
+
+    return isValidConnection ? userId : false;
   }
 
   _dataHandler(id, data, method, type) {
@@ -96,67 +105,75 @@ export default class Database {
     return this[`_${type}Manager`](id, data, actionType);
   }
 
-  async _reminderManager(id, reminder, type) {
-    const user = await this.db.ref(path.user(id));
-    return user
-      .once("value")
-      .then(data => data.val())
-      .then(
-        userData => {
-          const { reminders, nextReminder = null } = userData;
-          let updatedReminders =
-            !reminders || reminders === "empty" ? {} : { ...reminders };
-          if (type === "update") {
-            const reminderExist = checkIfReminderTimeIsAvaliable(
-              reminder,
-              updatedReminders
-            );
-            if (reminderExist) return "exist";
-            updatedReminders[reminder.id] = { ...reminder };
-          }
-          type === "delete" && delete updatedReminders[reminder.id];
+  // reminder manager methods
+  _updateReminders(reminder, remindersList) {
+    const reminderExist = checkIfReminderTimeIsAvaliable(
+      reminder,
+      remindersList
+    );
+    if (reminderExist) return false;
+    return { ...remindersList, [reminder.id]: { ...reminder } };
+  }
 
-          const isRemindersLength = !!Object.keys(updatedReminders).length;
-          const closestReminder = isRemindersLength
-            ? this._findUserClosestReminderDate(updatedReminders)
-            : null;
-          user.update({
-            reminders: isRemindersLength ? { ...updatedReminders } : "empty",
-            nextReminder:
-              closestReminder != nextReminder ? closestReminder : nextReminder
-          });
-          (!nextReminder || closestReminder != this.nextReminderToFire.time) &&
-            this.watcher.next();
-          return isRemindersLength ? { ...updatedReminders } : null;
-        },
-        err => false
-      );
+  async _reminderManager(id, reminder, type) {
+    const dbAccess = await this._dbDataValAccess(path.user(id));
+    if (!dbAccess) return false;
+    const { dbDataVal: userData, dbRef: userRef } = dbAccess;
+    const { reminders, nextReminder = null } = userData;
+
+    const isEmptyReminders = !reminders || reminders === "empty";
+    let remindersMap = isEmptyReminders ? {} : { ...reminders };
+
+    if (type === "update") {
+      remindersMap = this._updateReminders(reminder, remindersMap);
+      if (!remindersMap) return "exist";
+    }
+    if (type === "delete") delete remindersMap[reminder.id];
+
+    const isRemindersLength = !!Object.keys(remindersMap).length;
+
+    const closestReminder = isRemindersLength
+      ? this._findUserClosestReminderDate(remindersMap)
+      : null;
+
+    const newReminders = isRemindersLength ? { ...remindersMap } : "empty";
+    const newNextReminder =
+      closestReminder != nextReminder ? closestReminder : nextReminder;
+
+    userRef.update({
+      reminders: newReminders,
+      nextReminder: newNextReminder
+    });
+
+    const notEqualTimes = closestReminder != this.nextReminderToFire.time;
+
+    (!nextReminder || notEqualTimes) && this.watcher.next();
+
+    return isRemindersLength ? { ...remindersMap } : null;
   }
 
   async _personalManager(id, personal, type) {
-    const personalData = await this.db.ref(path.personal(id));
-    return personalData
-      .once("value")
-      .then(data => data.val())
-      .then(
-        personalInfo => {
-          const item = Object.entries(personal);
-          const extra = personalInfo.extra || {};
-          type === "update" && (extra[item[0][0]] = item[0][1]);
-          type === "delete" && delete extra[item[0][0]];
-          const updatedPersonalData = {
-            ...personalInfo,
-            extra: {
-              ...extra
-            }
-          };
-          personalData.update(updatedPersonalData);
-          return updatedPersonalData;
-        },
-        err => false
-      );
+    const dbAccess = await this._dbDataValAccess(path.personal(id));
+    if (!dbAccess) return false;
+    const { dbDataVal: personalInfo, dbRef: personalRef } = dbAccess;
+
+    const [name, value] = Object.entries(personal)[0];
+    const extra = personalInfo.extra || {};
+
+    type === "update" && (extra[name] = value);
+    type === "delete" && delete extra[name];
+
+    const updatedPersonalInfo = {
+      ...personalInfo,
+      extra: {
+        ...extra
+      }
+    };
+    personalRef.update(updatedPersonalInfo);
+    return updatedPersonalInfo;
   }
 
+  // TODO REFACTOR and bug fix
   *watcherGenerator() {
     while (true) {
       yield;
@@ -206,62 +223,62 @@ export default class Database {
   }
 
   async _expireReminder(id, reminderId) {
-    const user = await this.db.ref(path.user(id));
-    user
-      .once("value")
-      .then(data => data.val())
-      .then(userData => {
-        const { reminders } = userData;
-        reminders[reminderId].expired = true;
-        const updatedReminders = {
-          ...reminders
-        };
-        const nextClosestReminder = this._findUserClosestReminderDate(
-          reminders
-        );
-        user.update({
-          reminders: updatedReminders,
-          nextReminder: nextClosestReminder
-        });
-        const { text, date, time } = reminders[reminderId];
-        this.cbToBot({ id, text, date, time });
-        this.watcher.next();
-      });
+    const dbAccess = await this._dbDataValAccess(path.user(id));
+    if (!dbAccess) return false;
+    const { dbDataVal: userData, dbRef: userRef } = dbAccess;
+    const { reminders } = userData;
+
+    reminders[reminderId].expired = true;
+
+    const updatedReminders = {
+      ...reminders
+    };
+
+    const nextClosestReminder = this._findUserClosestReminderDate(reminders);
+
+    user.update({
+      reminders: updatedReminders,
+      nextReminder: nextClosestReminder
+    });
+
+    const { text, date, time } = reminders[reminderId];
+    this.botCallback({ id, text, date, time });
+    this.watcher.next();
   }
 
   // web app methods
   async setUpWebConnection({ tokens, id }) {
-    tokens.id = id ^ ID_DECODER;
-    const webConnect = createNewWebConnect(tokens);
-    const user = await this.db.ref(path.user(id));
-    user.update({ webConnect }, err => false);
-    return user ? tokens.publicToken : false;
+    const updatedTokens = { ...tokens };
+    updatedTokens.id = this._applyIdDecoder(id);
+    const webConnect = createNewWebConnect(updatedTokens);
+    const dbAccess = await this._dbDataAccess(path.user(id));
+    if (!dbAccess) return false;
+    const { dbRef: userRef } = dbAccess;
+    userRef.update({ webConnect });
+    return userRef ? updatedTokens.publicToken : false;
   }
+
   async closeWebConnection({ tokens }) {
     const userId = await this._checkTokens(tokens);
     if (!userId) return false;
-    const userWebConnect = await this.db.ref(path.user(userId));
-    userWebConnect.update({ webConnect: null }, err => false);
+    const dbAccess = await this._dbDataAccess(path.user(userId));
+    if (!dbAccess) return false;
+    const { dbRef } = dbAccess;
+    dbRef.update({ webConnect: null });
     return true;
   }
 
   async getInitUserDataForWebApp(urlToken) {
-    const users = await this.db.ref(path.users());
-    return users
-      .once("value")
-      .then(data => data.val())
-      .then(
-        users => {
-          const userIds = Object.keys(users);
-          const matchedId = userIds.find(
-            id =>
-              users[id].webConnect &&
-              checkLinkLifeTime(users[id].webConnect) &&
-              users[id].webConnect.publicToken === urlToken
-          );
-          return matchedId ? createUserWebData(users[matchedId]) : false;
-        },
-        err => false
-      );
+    const dbAccess = await this._dbDataValAccess(path.users());
+    if (!dbAccess) return false;
+    const { dbDataVal: users } = dbAccess;
+    const userIds = Object.keys(users);
+    const matchedId = userIds.find(
+      id =>
+        users[id].webConnect &&
+        checkLinkLifeTime(users[id].webConnect) &&
+        users[id].webConnect.publicToken === urlToken
+    );
+    return matchedId ? createUserWebData(users[matchedId]) : false;
   }
 }

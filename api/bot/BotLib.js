@@ -1,13 +1,14 @@
 import TokenGenerator from "uuid-token-generator";
-import BotBasic from "./BotBasic";
+import BasicBot from "./BasicBot";
 
 import { createWebAppUrl } from "./config";
 import { messages, botRegEx } from "../../helpers/botHelpers";
 import { reminderInputDateValidation } from "../../utils/reminderUtils";
 
-export default class BotLib extends BotBasic {
-  constructor() {
+export default class BotLib extends BasicBot {
+  constructor(DB) {
     super();
+    this.db = DB.database;
     this.tokgen = new TokenGenerator();
   }
 
@@ -85,7 +86,7 @@ export default class BotLib extends BotBasic {
     });
     return dbResponse;
   }
-  _callbackbToDBWatcher({ id, text, date, time }) {
+  _botCallback({ id, text, date, time }) {
     this.bot.sendMessage(id, messages.activatedReminder({ text, date, time }));
   }
 

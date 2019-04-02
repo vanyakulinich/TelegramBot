@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { BOT_KEY } from "../../config/bot";
 
-export default class BotBasic {
+export default class BasicBot {
   constructor() {
     this.bot = new TelegramBot(BOT_KEY, { polling: true });
   }
