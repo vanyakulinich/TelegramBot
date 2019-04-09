@@ -1,22 +1,35 @@
 <template>
   <v-layout>
-    <v-flex align-center justify-center>
+    <v-flex 
+      align-center 
+      justify-center>
       <ContentHeader text="Add New Reminder"/>
       <div v-if="reminderExist">Sorry reminder already exists</div>
       <div>
         <NewReminderHeader title="Enter Your Reminder"/>
-        <Input label="Reminder Text" :inputCB="reminderText"/>
+        <Input 
+          label="Reminder Text" 
+          :inputCB="reminderText">
         <div class="pickers">
           <NewReminderHeader title="Pick Up Date"/>
-          <DateTimePicker :change-date="changeDate" :min-date="minDate" datepicker-type="date"/>
+          <DateTimePicker 
+            :change-date="changeDate" 
+            :min-date="minDate" 
+            datepicker-type="date"/>
         </div>
         <div class="pickers">
           <NewReminderHeader title="Pick Up Time"/>
-          <DateTimePicker datepicker-type="time" :change-date="changeTime" :start-date="startTime"/>
+          <DateTimePicker 
+            datepicker-type="time" 
+            :change-date="changeTime" 
+            :start-date="startTime"/>
         </div>
       </div>
       <v-card-actions class="form_buttons">
-        <Button title="Add" btnColor="#31343b" :clickCB="addNewReminder"/>
+        <Button 
+          title="Add" 
+          btnColor="#31343b" 
+          :clickCB="addNewReminder"/>
       </v-card-actions>
     </v-flex>
   </v-layout>

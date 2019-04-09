@@ -1,21 +1,36 @@
 <template>
-  <v-layout row justify-center>
-    <v-dialog v-model="dialog" persistent max-width="400">
-      <v-icon slot="activator" medium>mdi-settings</v-icon>
+  <v-layout 
+    row 
+    justify-center>
+    <v-dialog 
+      v-model="dialog" 
+      persistent 
+      max-width="400">
+      <v-icon 
+        slot="activator" 
+        medium>mdi-settings</v-icon>
       <v-card>
         <v-card-title class="headline">
           <div class="dialog">Reminder Editor</div>
         </v-card-title>
         <v-card-text>
-          <v-flex xs12 sm6 md3 class="text">
+          <v-flex 
+            xs12 
+            sm6 
+            md3 
+            class="text">
             <Input
               :disabled="reminder.expired"
               label="reminder text"
               :inputCB="reminderText"
               :value="text"
-            />
+            >
           </v-flex>
-          <v-flex xs12 sm6 md3 class="date_pickers">
+          <v-flex 
+            xs12 
+            sm6 
+            md3 
+            class="date_pickers">
             <DateTimePicker
               :disabled="reminder.expired"
               datepicker-type="date"
@@ -23,7 +38,11 @@
               :change-date="changeDate"
             />
           </v-flex>
-          <v-flex xs12 sm6 md3 class="date_pickers">
+          <v-flex 
+            xs12 
+            sm6 
+            md3 
+            class="date_pickers">
             <DateTimePicker
               :disabled="reminder.expired"
               datepicker-type="time"
@@ -35,14 +54,19 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
-          <Button :clickCB="closeModal" title="cancel"/>
+          <Button 
+            :clickCB="closeModal" 
+            title="cancel"/>
           <Button
             :clickCB="saveEdited"
             title="Save"
             v-if="reminder && !reminder.expired"
             btnColor="#31343b"
           />
-          <Button :clickCB="delReminder" title="Delete" btnColor="red accent-1"/>
+          <Button 
+            :clickCB="delReminder" 
+            title="Delete" 
+            btnColor="red accent-1"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
