@@ -7,8 +7,10 @@ import {
 } from "./ISOStringsUtils";
 
 export const reminderInputDateValidation = match => {
-  const dateValidated = validDate(match[2]);
-  const timeValidated = validTime(match[3], match[2]);
+  const inputDate = match[2];
+  const inputTime = match[3];
+  const dateValidated = validDate(inputDate);
+  const timeValidated = validTime(inputTime, inputDate);
   return { dateValidated, timeValidated };
 };
 
