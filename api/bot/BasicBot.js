@@ -5,7 +5,7 @@ export default class BasicBot {
   constructor() {
     this.bot = new TelegramBot(BOT_KEY, { polling: true });
   }
-  recieveMsg({ pattern, callback }) {
+  registerMsgListener({ pattern, callback }) {
     this.bot.onText(pattern, (msg, match) => callback(msg, match));
   }
 

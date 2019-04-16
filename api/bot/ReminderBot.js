@@ -18,7 +18,7 @@ export default class ReminderBot extends BotLib {
         pattern,
         callback: callback.bind(this)
       };
-      this.recieveMsg(dataForMsgReciever);
+      this.registerMsgListener(dataForMsgReciever);
     }
 
     this.db.registerCallback({ botCallback: this._botCallback.bind(this) });

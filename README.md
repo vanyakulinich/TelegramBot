@@ -1,23 +1,38 @@
-# nuxt-templ
+# Reminder-Telegram-Bot
 
-> Nuxt.js project
+## Project created using Node.js(Koa.js as server), Nuxt.js for web part of the app and Firebase realtime-database
 
-## Build Setup
+## Description:
 
-``` bash
+### Telegram Bot, which stores all reminders, sent to him, can serve multiple users.
+
+### Bot has basic commands to serve user. The bot facilites allow communicate with users(get/send reminders).
+
+### The advanced work with reminders(crud facilities) are implemented in web part(user can take link from bot to his personal page)
+
+### The project can be scaled anyhow by adding additional functions to bot and web(for example calendar for date selection can be implemented into bot and so on)
+
+### The working bot can be found in Telegram by @SmartReminder_Bot
+
+---
+
+## Starting project:
+
+```bash
 # install dependencies
-$ npm install # Or yarn install
+$ yarn install
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+# starts web part in dev mode serve with hot reload at localhost:3000
+$ yarn dev
+
+#start whole project with bot in dev mode
+$ yarn dev:bot
 
 # build for production and launch server
-$ npm run build
-$ npm start
+$ yarn prod
 
-# generate static project
-$ npm run generate
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+### More bash commands can be found in package.json
 
+#### All private keys(for bot, db and so on) are hidden in gitignore. You can put yours instead(put them into config folder in app root folder)
