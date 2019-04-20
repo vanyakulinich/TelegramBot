@@ -12,4 +12,5 @@ dist
 
 yarn-error.log
 assets
+# config
 config

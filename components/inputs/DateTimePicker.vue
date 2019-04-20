@@ -17,6 +17,10 @@ import {
   createTodayISODate,
   getCurrentTimeZone
 } from "../../utils/ISOStringsUtils";
+import { Settings } from "luxon";
+
+Settings.defaultLocale = "en";
+
 export default {
   name: "DateTimePicker",
   props: {
